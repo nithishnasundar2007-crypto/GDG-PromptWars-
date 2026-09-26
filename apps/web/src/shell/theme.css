@@ -1,13 +1,33 @@
-/* Owner: Shruthi. Design tokens — UI/UX Specs §1.2 (colour) and §1.3 (type/spacing). */
+/* Compass Theme Tokens & Design System */
 :root {
-  --proven: #1e9e5a;
-  --suspected: #d89a00;
-  --gap: #d64545;
-  --untested: #9aa3ae;
-  --surface: #ffffff;
-  --bg: #f6f7f9;
-  --text: #16191d;
-  --accent: #2f5bea;
+  --proven: #10B981;
+  --suspected: #F59E0B;
+  --gap: #EF4444;
+  --untested: #6B7280;
+
+  --surface: #12100E;
+  --surface-card: #161412;
+  --surface-card-subtle: #1C1916;
+  --surface-hover: #221E1A;
+  
+  --bg: #080706;
+  --bg-deep: #050404;
+
+  --text: #F1EDE3;
+  --text-muted: #9E998F;
+  --text-dim: #635E55;
+
+  --accent: #FF2A1F;
+  --accent-hover: #E1251B;
+  --accent-glow: rgba(255, 42, 31, 0.3);
+
+  --border: #24201C;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+
+  --font-display: 'Oswald', sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-hand: 'Caveat', cursive;
 
   --space-1: 4px;
   --space-2: 8px;
@@ -15,48 +35,351 @@
   --space-4: 16px;
   --space-6: 24px;
   --space-8: 32px;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --proven: #3ccb7f;
-    --suspected: #f2b92e;
-    --gap: #f07070;
-    --untested: #6b7480;
-    --surface: #15181d;
-    --bg: #0e1013;
-    --text: #e8eaed;
-    --accent: #6e8cff;
-  }
+  --space-12: 48px;
 }
 
 body {
-  margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: Inter, system-ui, sans-serif;
-  font-size: 14px;
+  font-family: var(--font-body);
 }
 
-code,
-pre,
-.mono {
-  font-family: "JetBrains Mono", monospace;
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-hand {
+  font-family: var(--font-hand);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* App Shell Layout */
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--bg);
 }
 
 .app-shell__top-nav {
-  padding: var(--space-4);
-  background: var(--surface);
-  border-bottom: 1px solid var(--untested);
+  height: 64px;
+  background: #090807;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.app-shell__brand-group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
 .app-shell__brand {
-  font-weight: 600;
-  font-size: 20px;
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #F1EDE3;
+  line-height: 1;
+}
+
+.app-shell__brand-sub {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border-left: 1px solid #282420;
+  padding-left: 14px;
+}
+
+.app-shell__brand-sub-title {
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  color: #9E998F;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.app-shell__brand-sub-tagline {
+  font-size: 9px;
+  letter-spacing: 1px;
+  color: #635E55;
+  text-transform: uppercase;
+}
+
+.app-shell__nav-links {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  height: 100%;
+}
+
+.app-shell__nav-item {
+  font-family: var(--font-display);
+  font-size: 14px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #8E8A82;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 100%;
+  position: relative;
+  transition: color 150ms ease;
+  padding: 0 4px;
+}
+
+.app-shell__nav-item:hover {
+  color: #F1EDE3;
+}
+
+.app-shell__nav-item.active {
+  color: #F1EDE3;
+}
+
+.app-shell__nav-item.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--accent);
+  box-shadow: 0 -1px 8px var(--accent-glow);
+}
+
+.app-shell__nav-num {
+  font-size: 11px;
+  color: #635E55;
+}
+
+.app-shell__nav-item.active .app-shell__nav-num {
+  color: #9E998F;
+}
+
+.app-shell__actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.app-shell__red-divider {
+  width: 2px;
+  height: 28px;
+  background: var(--accent);
+  margin-right: 4px;
+}
+
+.app-shell__action-btn {
+  color: #9E998F;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: 4px;
+  transition: color 150ms ease, background 150ms ease;
+}
+
+.app-shell__action-btn:hover {
+  color: #F1EDE3;
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .app-shell__content {
-  padding: var(--space-4);
-  max-width: 1024px;
-  margin: 0 auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Sub-header navigation */
+.sub-nav {
+  padding: 16px 40px;
+  display: flex;
+  align-items: center;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #8E8A82;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  transition: color 150ms ease;
+}
+
+.back-link:hover {
+  color: #F1EDE3;
+}
+
+/* Buttons */
+.btn-red {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--accent);
+  color: #FFFFFF;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  padding: 10px 20px;
+  border-radius: 6px;
+  transition: background 150ms ease, transform 100ms ease, box-shadow 150ms ease;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn-red:hover {
+  background: var(--accent-hover);
+  box-shadow: 0 0 16px var(--accent-glow);
+}
+
+.btn-dark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #1C1916;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #F1EDE3;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 14px;
+  padding: 10px 18px;
+  border-radius: 6px;
+  transition: all 150ms ease;
+  cursor: pointer;
+}
+
+.btn-dark:hover {
+  background: #25221E;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.btn-outline-red {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 13px;
+  padding: 6px 14px;
+  border-radius: 6px;
+  transition: all 150ms ease;
+  cursor: pointer;
+}
+
+.btn-outline-red:hover {
+  background: var(--accent);
+  color: #FFFFFF;
+}
+
+/* Tags and Badges */
+.badge-topic {
+  background: #1E1B18;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #A6A196;
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 4px;
+}
+
+.badge-easy {
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #34D399;
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.badge-medium {
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #FBBF24;
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.badge-hard {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #F87171;
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.badge-company {
+  background: #181512;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #8E8A82;
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 4px;
+}
+
+/* Card primitives */
+.card-panel {
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px;
+}
+
+/* Form controls */
+.select-dark {
+  background: #181512;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #F1EDE3;
+  font-size: 14px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2214%22%20height%3D%2214%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%238E8A82%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+}
+
+.select-dark:focus {
+  border-color: var(--accent);
+}
+
+.input-dark {
+  background: #181512;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #F1EDE3;
+  font-size: 14px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  outline: none;
+  width: 100%;
+}
+
+.input-dark:focus {
+  border-color: var(--accent);
 }

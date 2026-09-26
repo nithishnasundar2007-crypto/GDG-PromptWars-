@@ -82,4 +82,5 @@ See `.env.example` — `VITE_USE_MOCKS`, `VITE_SCOPE`, `VITE_AI_PROXY_URL`,
 | Shruthi | Shell + progress screens (S1–S5) | `apps/web/src/shell/`, `apps/web/src/screens/progress/` |
 
 Full matrix + dependencies: `docs/TEAM_OWNERSHIP.md`. Contribution process,
-branches and the contract-change rule: `CONTRIBUTING.md`.
+branches and the contract-change rule: `CONTRIBUTING.md`//
+ 
