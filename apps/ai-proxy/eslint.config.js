@@ -20,7 +20,7 @@ export default tseslint.config(
       },
     },
     rules: {
-      "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
+      "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
       // A number is always safe to interpolate; the unsafe cases this rule
       // guards against (objects, `any`) stay errors.
       "@typescript-eslint/restrict-template-expressions": ["error", { allowNumber: true }],

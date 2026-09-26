@@ -175,10 +175,13 @@ export function approachFor(question: Question): string {
 export function redactHiddenTests(question: Question): Question {
   const redact = (t: Question["tests"]) =>
     t?.map((x) => (x.hidden ? { ...x, input: "", expected: "" } : x));
+  const redactedTests = redact(question.tests);
   return {
     ...question,
-    tests: redact(question.tests),
-    variant: question.variant ? { ...question.variant, tests: redact(question.variant.tests) ?? [] } : undefined,
+    // exactOptionalPropertyTypes: an optional field means absent, not
+    // present-with-value-undefined — only set the key when there's a value.
+    ...(redactedTests !== undefined ? { tests: redactedTests } : {}),
+    ...(question.variant ? { variant: { ...question.variant, tests: redact(question.variant.tests) ?? [] } } : {}),
   };
 }
 

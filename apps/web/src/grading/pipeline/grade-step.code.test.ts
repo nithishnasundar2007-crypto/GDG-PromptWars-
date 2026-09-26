@@ -57,10 +57,11 @@ describe("gradeStep — code step", () => {
 
 describe("gradeStep — Apply/Transfer on a question with no lang (e.g. Project Explanation)", () => {
   it("grades as a rubric step instead of throwing (docs/BACKEND2_GRADING_HANDOFF.md blocker)", async () => {
+    // exactOptionalPropertyTypes: omit lang/tests entirely rather than set
+    // them to `undefined` (an optional field means absent, not present-but-undefined).
+    const { lang: _lang, tests: _tests, ...questionRest } = question;
     const openEndedQuestion: Question = {
-      ...question,
-      lang: undefined,
-      tests: undefined,
+      ...questionRest,
       rubrics: { apply: [{ id: "p1", text: "Names a specific bottleneck", required: true }] },
     };
     vi.stubGlobal(

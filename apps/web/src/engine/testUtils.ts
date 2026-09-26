@@ -28,9 +28,9 @@ export const fakeGrade: GradeStepFn = async (question: Question, step: AnyStep, 
         passed,
         results: passed ? [{ testId: "t2", passed: true, timedOut: false }] : [failure],
         runtimeMs: 10,
-        firstFailure: passed ? undefined : failure,
+        ...(passed ? {} : { firstFailure: failure }),
       },
-      feedback,
+      ...(feedback !== undefined ? { feedback } : {}),
     };
   }
   const points = question.rubrics[step] ?? [];
@@ -44,7 +44,7 @@ export const fakeGrade: GradeStepFn = async (question: Question, step: AnyStep, 
       verifierYes: passed,
       met: passed,
     })),
-    feedback,
+    ...(feedback !== undefined ? { feedback } : {}),
   };
 };
 

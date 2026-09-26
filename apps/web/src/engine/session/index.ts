@@ -132,7 +132,7 @@ export function createSessionModule(repo: Repository, deps: EngineDeps = {}) {
         studentId,
         questionId: question.id,
         track: topic.track,
-        startStep: step,
+        ...(step !== undefined ? { startStep: step } : {}),
         startedAt: nowOf(deps).toISOString(),
       });
       await repo.saveLadder(ladder);
@@ -235,11 +235,12 @@ export function createSessionModule(repo: Repository, deps: EngineDeps = {}) {
         }
 
         // 7. Result.
+        const nextQuestionText = promptForStep(question, updatedLadder.current);
         return {
           grade,
           ladder: updatedLadder,
-          nextQuestionText: promptForStep(question, updatedLadder.current),
-          revealedApproach: step === "hint" && !grade.passed ? approachFor(question) : undefined,
+          ...(nextQuestionText !== undefined ? { nextQuestionText } : {}),
+          ...(step === "hint" && !grade.passed ? { revealedApproach: approachFor(question) } : {}),
           gapsChanged,
           cellsChanged,
         };

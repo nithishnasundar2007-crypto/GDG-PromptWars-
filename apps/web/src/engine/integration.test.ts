@@ -22,12 +22,14 @@ function recordingGrader(verdict: (call: Call) => boolean) {
       const results = tests.map((t, i) => ({ testId: t.id, passed: passed || i > 0, timedOut: false }));
       const firstFailure = passed ? undefined : { testId: tests[0]!.id, passed: false, timedOut: false, error: "expected 3, got 4" };
       return {
-        step, passed, feedback,
-        run: { passed, results: firstFailure ? [firstFailure, ...results.slice(1)] : results, runtimeMs: 42, firstFailure },
+        step, passed,
+        ...(feedback !== undefined ? { feedback } : {}),
+        run: { passed, results: firstFailure ? [firstFailure, ...results.slice(1)] : results, runtimeMs: 42, ...(firstFailure ? { firstFailure } : {}) },
       };
     }
     return {
-      step, passed, feedback,
+      step, passed,
+      ...(feedback !== undefined ? { feedback } : {}),
       rubric: (q.rubrics[step] ?? []).map((p) => ({
         pointId: p.id, spans: passed ? ["quoted words"] : [], quoteMatched: passed, verifierYes: passed, met: passed,
       })),
@@ -53,7 +55,10 @@ describe("code question (Apply) through an injected grader", () => {
     expect(r.nextQuestionText).toBeTruthy();
     expect(r.gapsChanged).toHaveLength(1);
     expect(r.cellsChanged).toHaveLength(1);
-    expect(r).toHaveProperty("revealedApproach");
+    // revealedApproach only applies to the hint step (API Contract §3.1);
+    // an Apply-step SubmitResult correctly omits the key entirely rather
+    // than including it set to undefined (exactOptionalPropertyTypes).
+    expect(r.revealedApproach).toBeUndefined();
 
     // Attempt keeps the grader's evidence untouched
     const [attempt] = await h.repo.getAttempts(h.student.id);

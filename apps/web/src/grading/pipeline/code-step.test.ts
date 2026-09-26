@@ -49,20 +49,23 @@ describe("gradeCodeStep", () => {
   });
 
   it("throws when the question has no language configured", async () => {
-    const noLangQuestion: Question = { ...baseQuestion, lang: undefined };
+    // exactOptionalPropertyTypes: an optional field means absent, not
+    // present-with-value-undefined, so this omits the key via rest-destructure
+    // rather than `{ ...baseQuestion, lang: undefined }`.
+    const { lang: _lang, ...noLangQuestion } = baseQuestion;
     await expect(gradeCodeStep(noLangQuestion, "apply", "code")).rejects.toThrow(/no language configured/);
   });
 
   it("uses an empty test list for apply when question.tests is undefined", async () => {
     const { runCode } = await import("../runner");
-    const noTestsQuestion: Question = { ...baseQuestion, tests: undefined };
+    const { tests: _tests, ...noTestsQuestion } = baseQuestion;
     await gradeCodeStep(noTestsQuestion, "apply", "code");
     expect(vi.mocked(runCode)).toHaveBeenCalledWith("code", "python", []);
   });
 
   it("uses an empty test list for transfer when question.variant is undefined", async () => {
     const { runCode } = await import("../runner");
-    const noVariantQuestion: Question = { ...baseQuestion, variant: undefined };
+    const { variant: _variant, ...noVariantQuestion } = baseQuestion;
     await gradeCodeStep(noVariantQuestion, "transfer", "code");
     expect(vi.mocked(runCode)).toHaveBeenCalledWith("code", "python", []);
   });
