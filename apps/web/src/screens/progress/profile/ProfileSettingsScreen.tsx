@@ -93,7 +93,7 @@ export function ProfileSettingsScreen() {
             ].map((item) => (
               <button
                 key={item.id}
-                onClick={() => setActiveTab(item.id as any)}
+                onClick={() => setActiveTab(item.id as "profile" | "preferences" | "companies" | "notifications" | "privacy")}
                 style={{
                   display: "flex",
                   alignItems: "center",
