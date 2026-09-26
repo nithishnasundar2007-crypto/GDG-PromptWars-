@@ -8,7 +8,7 @@ import type { Request, Response } from "express";
 import { Router } from "express";
 import { z } from "zod";
 import { CONTRACT_VERSION } from "./config.js";
-import { callGemini } from "./gemini.js";
+import { callGemini, callGeminiWithAudio } from "./gemini.js";
 import { logProxyCall } from "./logging.js";
 import { PROMPTS } from "./prompts/index.js";
 import { allow } from "./rateLimit.js";
@@ -82,15 +82,47 @@ router.post("/v1/explain", (req, res) => void handleOperation(req, res, "explain
 router.post("/v1/project-questions", (req, res) => void handleOperation(req, res, "project-question-generator", projectQuestionsRequestSchema));
 
 router.post("/v1/transcribe", (req, res) => {
-  const parsed = transcribeRequestSchema.safeParse(req.body);
-  if (!parsed.success) {
-    res.status(400).json({ error: "Invalid request body" });
-    return;
-  }
-  // Audio transcription needs Gemini's inline-data content shape, not the
-  // plain-text build() path the other operations use — wiring the actual
-  // Gemini audio call is still open (docs/BACKEND1_REPORT.md, Task 8).
-  res.status(501).json({ error: "transcribe is not implemented yet" });
+  void (async () => {
+    const clientId = req.ip ?? "unknown";
+    const start = Date.now();
+    const promptDef = PROMPTS.transcribe;
+
+    if (!allow(clientId)) {
+      logProxyCall({ promptId: "transcribe", promptVersion: promptDef.version, latencyMs: Date.now() - start, outcome: "rejected", reason: "rate_limit" });
+      res.status(429).json({ error: "Rate limit exceeded" });
+      return;
+    }
+
+    const appCheckOk = await verifyAppCheckToken(req.header("X-Firebase-AppCheck"));
+    if (!appCheckOk) {
+      logProxyCall({ promptId: "transcribe", promptVersion: promptDef.version, latencyMs: Date.now() - start, outcome: "rejected", reason: "app_check" });
+      res.status(401).json({ error: "App Check verification failed" });
+      return;
+    }
+
+    const parsed = transcribeRequestSchema.safeParse(req.body);
+    if (!parsed.success) {
+      logProxyCall({ promptId: "transcribe", promptVersion: promptDef.version, latencyMs: Date.now() - start, outcome: "rejected", reason: "schema_invalid" });
+      res.status(400).json({ error: "Invalid request body" });
+      return;
+    }
+
+    try {
+      const raw = await callGeminiWithAudio({
+        systemInstruction: promptDef.systemInstruction,
+        responseSchema: promptDef.responseSchema,
+        temperature: promptDef.temperature,
+        audioBase64: parsed.data.audioBase64,
+        mimeType: parsed.data.mimeType,
+      });
+      const json: unknown = JSON.parse(raw);
+      logProxyCall({ promptId: "transcribe", promptVersion: promptDef.version, latencyMs: Date.now() - start, outcome: "ok" });
+      res.json(json);
+    } catch {
+      logProxyCall({ promptId: "transcribe", promptVersion: promptDef.version, latencyMs: Date.now() - start, outcome: "failed" });
+      res.status(502).json({ error: "Gemini call failed" });
+    }
+  })();
 });
 
 router.use((req, res) => {

@@ -41,3 +41,30 @@ export async function callGemini(options: GeminiCallOptions): Promise<string> {
   }
   return text;
 }
+
+export interface GeminiAudioCallOptions {
+  systemInstruction: string;
+  responseSchema: object;
+  temperature: number;
+  audioBase64: string;
+  mimeType: string;
+}
+
+/** Calls Gemini's audio-understanding path (PRD F10) with inline audio data. */
+export async function callGeminiWithAudio(options: GeminiAudioCallOptions): Promise<string> {
+  const response = await client.models.generateContent({
+    model: config.geminiModel,
+    contents: [{ inlineData: { mimeType: options.mimeType, data: options.audioBase64 } }],
+    config: {
+      systemInstruction: options.systemInstruction,
+      temperature: options.temperature,
+      responseMimeType: "application/json",
+      responseSchema: options.responseSchema,
+    },
+  });
+  const text = response.text;
+  if (text === undefined) {
+    throw new Error("Gemini returned no text content");
+  }
+  return text;
+}
