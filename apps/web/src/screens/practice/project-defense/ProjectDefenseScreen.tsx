@@ -110,8 +110,8 @@ export function ProjectDefenseScreen() {
                 textShadow: "0 2px 10px rgba(0,0,0,0.9)",
               }}
             >
-              PRACTICE<br />
-              THE CONVERSATION.<br />
+              PRACTICE <br />
+              THE CONVERSATION. <br />
               OWN THE INTERVIEW.
             </div>
           </div>

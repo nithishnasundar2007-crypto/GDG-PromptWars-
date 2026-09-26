@@ -73,7 +73,7 @@ export function ReadinessMapScreen() {
                 marginBottom: "16px",
               }}
             >
-              READINESS<br />
+              READINESS <br />
               <span style={{ color: "#FF2A1F" }}>MAP.</span>
             </h1>
 

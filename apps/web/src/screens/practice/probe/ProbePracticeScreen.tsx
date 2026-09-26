@@ -112,9 +112,9 @@ export function ProbePracticeScreen() {
                 textShadow: "0 2px 10px rgba(0,0,0,0.9)",
               }}
             >
-              SAME<br />
-              QUESTIONS<br />
-              STRONGER<br />
+              SAME <br />
+              QUESTIONS <br />
+              STRONGER <br />
               YOU.
             </div>
           </div>

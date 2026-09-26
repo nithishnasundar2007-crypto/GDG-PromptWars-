@@ -58,7 +58,7 @@ export function PlanScreen() {
                 marginBottom: "16px",
               }}
             >
-              YOUR PLACEMENT<br />
+              YOUR PLACEMENT <br />
               <span style={{ color: "#FF2A1F" }}>ROADMAP</span>
             </h1>
 
@@ -168,8 +168,8 @@ export function PlanScreen() {
                   textShadow: "0 2px 10px rgba(0,0,0,0.9)",
                 }}
               >
-                PLAN TODAY.<br />
-                A BETTER<br />
+                PLAN TODAY. <br />
+                A BETTER <br />
                 TOMORROW.
               </div>
             </div>

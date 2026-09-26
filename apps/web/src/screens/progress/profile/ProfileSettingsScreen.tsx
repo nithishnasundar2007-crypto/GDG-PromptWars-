@@ -28,7 +28,7 @@ export function ProfileSettingsScreen() {
                 marginBottom: "16px",
               }}
             >
-              PROFILE<br />
+              PROFILE <br />
               <span style={{ color: "#FF2A1F" }}>& SETTINGS.</span>
             </h1>
 
@@ -71,9 +71,9 @@ export function ProfileSettingsScreen() {
                 textShadow: "0 2px 10px rgba(0,0,0,0.9)",
               }}
             >
-              BIGGER<br />
-              SKILLS<br />
-              BRIGHTER<br />
+              BIGGER <br />
+              SKILLS <br />
+              BRIGHTER <br />
               TOMORROW.
             </div>
           </div>
