@@ -1,0 +1,62 @@
+/* Owner: Shruthi. Design tokens — UI/UX Specs §1.2 (colour) and §1.3 (type/spacing). */
+:root {
+  --proven: #1e9e5a;
+  --suspected: #d89a00;
+  --gap: #d64545;
+  --untested: #9aa3ae;
+  --surface: #ffffff;
+  --bg: #f6f7f9;
+  --text: #16191d;
+  --accent: #2f5bea;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --proven: #3ccb7f;
+    --suspected: #f2b92e;
+    --gap: #f07070;
+    --untested: #6b7480;
+    --surface: #15181d;
+    --bg: #0e1013;
+    --text: #e8eaed;
+    --accent: #6e8cff;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 14px;
+}
+
+code,
+pre,
+.mono {
+  font-family: "JetBrains Mono", monospace;
+}
+
+.app-shell__top-nav {
+  padding: var(--space-4);
+  background: var(--surface);
+  border-bottom: 1px solid var(--untested);
+}
+
+.app-shell__brand {
+  font-weight: 600;
+  font-size: 20px;
+}
+
+.app-shell__content {
+  padding: var(--space-4);
+  max-width: 1024px;
+  margin: 0 auto;
+}

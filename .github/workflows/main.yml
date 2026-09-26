@@ -1,0 +1,35 @@
+name: Main
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  full-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run test
+      - run: npm run validate-seeds
+      - run: npm run build
+      - name: Check GEMINI_API_KEY never reaches the web bundle
+        run: node scripts/check-bundle-key.mjs
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+      - name: E2E demo path (mocks)
+        run: npx playwright test
+        working-directory: tests/e2e
+        env:
+          VITE_USE_MOCKS: "true"
+      # Deploy-ready build artifacts for both apps are produced by the
+      # `npm run build` step above; wiring an actual deploy target
+      # (Vercel/Cloudflare/Netlify) is a team decision, not scaffolded here.

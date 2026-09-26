@@ -1,0 +1,28 @@
+{
+  "id": "q_bfs_probe",
+  "topicId": "tp_graphs",
+  "track": "technical",
+  "role": "probe",
+  "prompt": "Given a graph and a start node, find the shortest path (fewest edges) to a target node.",
+  "lang": "python",
+  "starterCode": "def shortest_path(graph, start, target):\n    pass\n",
+  "hint": "Which traversal visits nodes level by level?",
+  "rubrics": {
+    "recognize": [
+      { "id": "rp_1", "text": "Names BFS and says why it gives the shortest path", "required": true }
+    ],
+    "explain": [
+      { "id": "rp_2", "text": "Explains why BFS guarantees shortest path in an unweighted graph", "required": true }
+    ]
+  },
+  "tests": [
+    { "id": "t1", "input": "small graph, adjacent nodes", "expected": "1", "hidden": false },
+    { "id": "t2", "input": "graph with 4 hops to target", "expected": "4", "hidden": true }
+  ],
+  "variant": {
+    "prompt": "Now the graph is weighted with unit-or-double edge costs. Adapt your approach.",
+    "tests": [{ "id": "t3", "input": "weighted 4-hop graph", "expected": "4", "hidden": true }]
+  },
+  "targetTimeMs": { "recognize": 60000, "apply": 300000, "explain": 90000, "transfer": 240000 },
+  "followUp": "What would you change if the graph had millions of nodes?"
+}

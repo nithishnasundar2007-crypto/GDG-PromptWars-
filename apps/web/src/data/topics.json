@@ -1,0 +1,6 @@
+[
+  { "id": "tp_graphs", "name": "Graphs", "track": "technical", "area": "dsa" },
+  { "id": "tp_sql_joins", "name": "SQL Joins", "track": "technical", "area": "dbms" },
+  { "id": "tp_project", "name": "Project Explanation", "track": "technical", "area": "project" },
+  { "id": "tp_hr_communication", "name": "Behavioural", "track": "hr", "area": "hr" }
+]

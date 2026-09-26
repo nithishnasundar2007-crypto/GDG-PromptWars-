@@ -1,0 +1,22 @@
+{
+  "name": "compass",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "tests/e2e"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w web",
+    "build": "npm run build -w web && npm run build -w ai-proxy",
+    "lint": "npm run lint -w web",
+    "typecheck": "npm run typecheck -w web && npm run typecheck -w ai-proxy",
+    "test": "npm run test -w web",
+    "validate-seeds": "node scripts/validate-seeds.mjs",
+    "check-bundle-key": "node scripts/check-bundle-key.mjs"
+  },
+  "devDependencies": {
+    "prettier": "^3.4.2"
+  }
+}
