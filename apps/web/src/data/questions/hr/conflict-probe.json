@@ -1,0 +1,26 @@
+{
+  "id": "q_hr_conflict_probe",
+  "topicId": "tp_hr_communication",
+  "track": "hr",
+  "role": "probe",
+  "prompt": "Tell me about a time you disagreed with a teammate on a project. What happened?",
+  "hint": "Use Situation, Action, Result: what was the situation, what did you do, and how did it end?",
+  "rubrics": {
+    "structure": [
+      { "id": "hrc_s1", "text": "Describes the situation or context", "required": true },
+      { "id": "hrc_s2", "text": "Describes the action the student took", "required": true },
+      { "id": "hrc_s3", "text": "Describes the result or outcome", "required": true }
+    ],
+    "specifics": [
+      { "id": "hrc_p1", "text": "Gives a concrete, real example rather than a general statement", "required": true },
+      { "id": "hrc_p2", "text": "States the student's own role in resolving it", "required": true },
+      { "id": "hrc_p3", "text": "Includes a number or measurable outcome", "required": false }
+    ],
+    "followup": [
+      { "id": "hrc_f1", "text": "Answers the follow-up consistently with the original story", "required": true },
+      { "id": "hrc_f2", "text": "Reflects on what they would do differently or learned", "required": true }
+    ]
+  },
+  "targetTimeMs": { "structure": 120000, "specifics": 90000, "followup": 90000 },
+  "followUp": "What would you do differently if the same disagreement happened again?"
+}

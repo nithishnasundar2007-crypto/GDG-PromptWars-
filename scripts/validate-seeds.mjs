@@ -64,6 +64,14 @@ for (const [topicId, questions] of questionsByTopic) {
   }
 }
 
+const topicFiles = ["topics.json", "topics.two-week.json"].map((f) => join(DATA_DIR, f));
+for (const file of topicFiles) {
+  const topics = readJson(file);
+  for (const t of topics ?? []) {
+    if (!questionsByTopic.has(t.id)) warnings.push(`topic "${t.id}" (${file.split(/[\/]/).pop()}): has no questions at all`);
+  }
+}
+
 for (const file of companyFiles) {
   const c = readJson(file);
   if (!c) continue;

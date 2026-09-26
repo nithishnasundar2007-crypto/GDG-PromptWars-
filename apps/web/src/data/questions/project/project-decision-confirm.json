@@ -1,0 +1,33 @@
+{
+  "id": "q_project_decision_confirm",
+  "topicId": "tp_project",
+  "track": "technical",
+  "role": "confirm",
+  "prompt": "Take the most important technical decision in your project, such as the database, the framework or how you structured the data. What did you choose, what else could you have chosen, and what did the choice cost you?",
+  "hint": "Name the decision, one real alternative, and one concrete downside you accepted.",
+  "rubrics": {
+    "recognize": [
+      { "id": "pdc_r1", "text": "Names one specific technical decision in the project", "required": true },
+      { "id": "pdc_r2", "text": "Names a specific alternative that was possible", "required": true }
+    ],
+    "hint": [
+      { "id": "pdc_h1", "text": "Names one specific technical decision in the project", "required": true }
+    ],
+    "apply": [
+      { "id": "pdc_a1", "text": "Describes concretely how the decision was implemented in the project", "required": true }
+    ],
+    "explain": [
+      { "id": "pdc_e1", "text": "Names a concrete trade-off or downside of the choice, not a generic one", "required": true },
+      { "id": "pdc_e2", "text": "Ties the choice to a constraint such as time, team skill or data shape", "required": false }
+    ],
+    "transfer": [
+      { "id": "pdc_t1", "text": "Says how the choice would change under the new constraint and why", "required": true }
+    ]
+  },
+  "variant": {
+    "prompt": "Twist: the deadline is halved and the team shrinks to two people. Would you make the same decision? What would you change?",
+    "tests": []
+  },
+  "targetTimeMs": { "recognize": 90000, "hint": 60000, "apply": 150000, "explain": 120000, "transfer": 120000 },
+  "followUp": "Which part of that trade-off has actually hurt you, and how did you handle it?"
+}

@@ -3,26 +3,37 @@
   "topicId": "tp_graphs",
   "track": "technical",
   "role": "probe",
-  "prompt": "Given a graph and a start node, find the shortest path (fewest edges) to a target node.",
+  "prompt": "Given an unweighted graph (adjacency dict) and a start node, return the fewest edges on a path from start to target, or -1 if the target is unreachable.",
   "lang": "python",
   "starterCode": "def shortest_path(graph, start, target):\n    pass\n",
-  "hint": "Which traversal visits nodes level by level?",
+  "hint": "Which traversal visits nodes level by level, so the first time you reach a node is via the fewest edges?",
   "rubrics": {
     "recognize": [
-      { "id": "rp_1", "text": "Names BFS and says why it gives the shortest path", "required": true }
+      { "id": "bfs_r1", "text": "Names BFS (breadth-first / level-by-level traversal) as the approach", "required": true },
+      { "id": "bfs_r2", "text": "Says why it gives the fewest edges: nodes are reached in order of distance", "required": true }
+    ],
+    "hint": [
+      { "id": "bfs_h1", "text": "Names BFS (breadth-first / level-by-level traversal) as the approach", "required": true }
     ],
     "explain": [
-      { "id": "rp_2", "text": "Explains why BFS guarantees shortest path in an unweighted graph", "required": true }
+      { "id": "bfs_e1", "text": "Explains that the first time BFS reaches a node is along a shortest path in an unweighted graph", "required": true },
+      { "id": "bfs_e2", "text": "Mentions a visited set so each node is processed once", "required": false }
     ]
   },
   "tests": [
-    { "id": "t1", "input": "small graph, adjacent nodes", "expected": "1", "hidden": false },
-    { "id": "t2", "input": "graph with 4 hops to target", "expected": "4", "hidden": true }
+    { "id": "t1", "input": "[{\"A\":[\"B\"],\"B\":[\"A\"]},\"A\",\"B\"]", "expected": "1", "hidden": false },
+    { "id": "t2", "input": "[{\"A\":[\"B\",\"F\"],\"B\":[\"C\"],\"C\":[\"D\"],\"D\":[\"E\"],\"E\":[],\"F\":[\"G\"],\"G\":[\"E\"]},\"A\",\"E\"]", "expected": "3", "hidden": true },
+    { "id": "t3", "input": "[{\"A\":[\"B\"],\"B\":[],\"C\":[]},\"A\",\"C\"]", "expected": "-1", "hidden": true },
+    { "id": "t4", "input": "[{\"A\":[\"B\"],\"B\":[\"A\"]},\"A\",\"A\"]", "expected": "0", "hidden": true }
   ],
   "variant": {
-    "prompt": "Now the graph is weighted with unit-or-double edge costs. Adapt your approach.",
-    "tests": [{ "id": "t3", "input": "weighted 4-hop graph", "expected": "4", "hidden": true }]
+    "prompt": "Twist: every edge now has a cost of 1 or 2 (graph maps node -> [[neighbour, cost], ...]). Return the minimum total cost from start to target. Fewest edges is no longer the same as cheapest.",
+    "starterCode": "def cheapest_path(graph, start, target):\n    pass\n",
+    "tests": [
+      { "id": "t5", "input": "[{\"A\":[[\"C\",2],[\"B\",1]],\"C\":[[\"E\",2]],\"B\":[[\"D\",1]],\"D\":[[\"E\",1]],\"E\":[]},\"A\",\"E\"]", "expected": "3", "hidden": true },
+      { "id": "t6", "input": "[{\"A\":[[\"B\",2]],\"B\":[]},\"A\",\"B\"]", "expected": "2", "hidden": true }
+    ]
   },
-  "targetTimeMs": { "recognize": 60000, "apply": 300000, "explain": 90000, "transfer": 240000 },
-  "followUp": "What would you change if the graph had millions of nodes?"
+  "targetTimeMs": { "recognize": 60000, "hint": 45000, "apply": 300000, "explain": 90000, "transfer": 240000 },
+  "followUp": "Explain why your approach is guaranteed to find the fewest edges. What would change if the graph had millions of nodes?"
 }

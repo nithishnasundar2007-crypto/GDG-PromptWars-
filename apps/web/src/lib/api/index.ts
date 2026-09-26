@@ -3,7 +3,7 @@
 // implementation, keyed on VITE_USE_MOCKS. Screens never import engine/* or
 // grading/* directly (UI/UX Specs + the architect brief's frontend rules).
 
-import type { CompassApi } from "../../contracts";
+import type { CompassApi, ErrorCode, Result } from "../../contracts";
 import { mockApi } from "../../contracts";
 import { config } from "../../config";
 import {
@@ -15,6 +15,7 @@ import {
   createDebriefModule,
   getCompanies,
   getRoundMap,
+  errorCodeOf,
 } from "../../engine";
 import {
   initRunner,
@@ -24,6 +25,11 @@ import {
   transcribe,
 } from "../../grading";
 import { ok, err } from "../../contracts/errors";
+
+// Engine errors carry their own contract code; anything else falls back to the given one.
+function fail<T>(e: unknown, fallback: ErrorCode): Result<T> {
+  return err(errorCodeOf(e, fallback), e instanceof Error ? e.message : undefined);
+}
 
 function buildRealApi(): CompassApi {
   const repo = new InMemoryRepository();
@@ -52,77 +58,77 @@ function buildRealApi(): CompassApi {
       try {
         return ok(await getCompanies());
       } catch (e) {
-        return err("NOT_FOUND", e instanceof Error ? e.message : undefined);
+        return fail(e, "NOT_FOUND");
       }
     },
     async getRoundMap(companyId) {
       try {
         return ok(await getRoundMap(companyId));
       } catch (e) {
-        return err("NOT_FOUND", e instanceof Error ? e.message : undefined);
+        return fail(e, "NOT_FOUND");
       }
     },
     async createStudent(input) {
       try {
         return ok(await session.createStudent(input));
       } catch (e) {
-        return err("NOT_FOUND", e instanceof Error ? e.message : undefined);
+        return fail(e, "NOT_FOUND");
       }
     },
     async startLadder(studentId, topicId, role, step) {
       try {
         return ok(await session.startLadder(studentId, topicId, role, step));
       } catch (e) {
-        return err("NOT_FOUND", e instanceof Error ? e.message : undefined);
+        return fail(e, "NOT_FOUND");
       }
     },
     async submitStep(ladderId, answer, timeMs) {
       try {
         return ok(await session.submitStep(ladderId, answer, timeMs));
       } catch (e) {
-        return err("INVALID_STEP", e instanceof Error ? e.message : undefined);
+        return fail(e, "INVALID_STEP");
       }
     },
     async getReadinessMap(studentId) {
       try {
         return ok(await readiness.getReadinessMap(studentId));
       } catch (e) {
-        return err("NOT_FOUND", e instanceof Error ? e.message : undefined);
+        return fail(e, "NOT_FOUND");
       }
     },
     async getCellEvidence(studentId, topicId, step) {
       try {
         return ok(await readiness.getCellEvidence(studentId, topicId, step));
       } catch (e) {
-        return err("NOT_FOUND", e instanceof Error ? e.message : undefined);
+        return fail(e, "NOT_FOUND");
       }
     },
     async getPlan(studentId) {
       try {
         return ok(await planner.getPlan(studentId));
       } catch (e) {
-        return err("NOT_FOUND", e instanceof Error ? e.message : undefined);
+        return fail(e, "NOT_FOUND");
       }
     },
     async getNextTask(studentId) {
       try {
         return ok(await planner.getNextTask(studentId));
       } catch (e) {
-        return err("NOT_FOUND", e instanceof Error ? e.message : undefined);
+        return fail(e, "NOT_FOUND");
       }
     },
     async getDrill(gapId) {
       try {
         return ok(await drills.getDrill(gapId));
       } catch (e) {
-        return err("NOT_FOUND", e instanceof Error ? e.message : undefined);
+        return fail(e, "NOT_FOUND");
       }
     },
     async completePlanItem(itemId, status) {
       try {
         return ok(await planner.completePlanItem(itemId, status));
       } catch (e) {
-        return err("NOT_FOUND", e instanceof Error ? e.message : undefined);
+        return fail(e, "NOT_FOUND");
       }
     },
     async generateProjectQuestions(projectText) {
@@ -150,7 +156,7 @@ function buildRealApi(): CompassApi {
       try {
         return ok(await debrief.saveDebrief(input));
       } catch (e) {
-        return err("NOT_FOUND", e instanceof Error ? e.message : undefined);
+        return fail(e, "NOT_FOUND");
       }
     },
   };

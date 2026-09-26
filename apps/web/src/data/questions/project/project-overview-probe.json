@@ -1,0 +1,34 @@
+{
+  "id": "q_project_overview_probe",
+  "topicId": "tp_project",
+  "track": "technical",
+  "role": "probe",
+  "prompt": "Pick your main project. In two minutes, tell me what problem it solves, who uses it, what you personally built, and how the main parts fit together.",
+  "hint": "Cover four things in order: the problem and user, your own role, the main components, and how data flows between them.",
+  "rubrics": {
+    "recognize": [
+      { "id": "pov_r1", "text": "States the problem the project solves and who it is for", "required": true },
+      { "id": "pov_r2", "text": "States their own role, not just the team's", "required": true }
+    ],
+    "hint": [
+      { "id": "pov_h1", "text": "States the problem the project solves and who it is for", "required": true }
+    ],
+    "apply": [
+      { "id": "pov_a1", "text": "Names the main components (for example frontend, backend, database) and what each does", "required": true },
+      { "id": "pov_a2", "text": "Describes how data or requests flow between the components", "required": true }
+    ],
+    "explain": [
+      { "id": "pov_e1", "text": "Justifies at least one technology or design choice with a reason", "required": true },
+      { "id": "pov_e2", "text": "Names an alternative that was considered", "required": false }
+    ],
+    "transfer": [
+      { "id": "pov_t1", "text": "Adapts the design to the new requirement and names what must change", "required": true }
+    ]
+  },
+  "variant": {
+    "prompt": "Twist: the project must now handle 100 times more users. What would you change first, and why?",
+    "tests": []
+  },
+  "targetTimeMs": { "recognize": 120000, "hint": 60000, "apply": 180000, "explain": 120000, "transfer": 150000 },
+  "followUp": "Why did you choose that technology or design over the alternatives?"
+}

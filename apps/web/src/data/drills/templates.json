@@ -1,0 +1,197 @@
+[
+  {
+    "topicId": "tp_graphs",
+    "gapType": "coding",
+    "title": "Find and fix the off-by-one in this BFS",
+    "content": "This BFS gives every answer one too large. Read the code, trace it on a two-node graph by hand, find the line that starts the distance counter wrongly, fix it, and run the tests. The bug is small: the point is learning to trace a queue step by step.",
+    "minutes": 15,
+    "questionIds": ["q_bfs_debug_drill"]
+  },
+  {
+    "topicId": "tp_graphs",
+    "gapType": "concept",
+    "title": "Why BFS finds the fewest edges",
+    "content": "BFS visits every node at distance 1, then every node at distance 2, and so on, because the queue is first-in first-out. The first time BFS reaches a node is therefore along a path with the fewest edges. DFS has no such guarantee: it may reach a node by a long path first. Draw a 6-node graph with a shortcut and trace both traversals, then explain out loud why BFS wins for unweighted shortest path.",
+    "minutes": 10
+  },
+  {
+    "topicId": "tp_graphs",
+    "gapType": "recall",
+    "title": "Graph traversal flashcards",
+    "content": "Q: Which traversal finds the fewest edges in an unweighted graph? A: BFS.\nQ: Which data structure does BFS use? A: A queue.\nQ: When should a node be marked visited? A: When it is enqueued, so it is never queued twice.\nQ: What does BFS return for an unreachable target? A: Your code must return a sentinel such as -1 after the queue empties.\nQ: DFS uses which structure? A: A stack or recursion.",
+    "minutes": 8
+  },
+  {
+    "topicId": "tp_graphs",
+    "gapType": "explaining",
+    "title": "Re-explain BFS in your own words",
+    "content": "Solve the problem again, then explain it in three sentences: what the queue holds, why nodes come out in order of distance, and why the first arrival at the target is the shortest. Record yourself or write it, then check that every sentence gives a reason rather than restating the code.",
+    "minutes": 10
+  },
+  {
+    "topicId": "tp_graphs",
+    "gapType": "adapting",
+    "title": "Twisted BFS variants",
+    "content": "Solve each twisted variant of a BFS problem you already know: diagonal moves on a grid, edge costs of 1 or 2, and two starting sources. For each, first write down which assumption of plain BFS breaks, then change only that part of the code.",
+    "minutes": 20,
+    "questionIds": ["q_bfs_grid_confirm", "q_bfs_probe"]
+  },
+  {
+    "topicId": "tp_graphs",
+    "gapType": "speed",
+    "title": "Timed BFS reps",
+    "content": "Write a correct BFS shortest-path from a blank editor against the clock. Target: under five minutes, then under four. Keep a template in your head: queue of (node, distance), visited set, loop, return -1 at the end.",
+    "minutes": 15,
+    "questionIds": ["q_bfs_probe"]
+  },
+  {
+    "topicId": "tp_sql_joins",
+    "gapType": "coding",
+    "title": "Find and fix the join that drops students",
+    "content": "This query silently loses students who have no enrollment. Work out which join type removes unmatched rows, change it, and check the result on a student with no course.",
+    "minutes": 12,
+    "questionIds": ["q_sql_debug_drill"]
+  },
+  {
+    "topicId": "tp_sql_joins",
+    "gapType": "concept",
+    "title": "INNER vs LEFT JOIN, row by row",
+    "content": "INNER JOIN keeps only rows that match on both sides. LEFT JOIN keeps every row from the left table and fills the right table's columns with NULL when nothing matches. Take three students and two courses on paper, write the result table for each join, and note which rows appear only under LEFT JOIN.",
+    "minutes": 10
+  },
+  {
+    "topicId": "tp_sql_joins",
+    "gapType": "recall",
+    "title": "SQL join flashcards",
+    "content": "Q: Which join keeps unmatched rows from the left table? A: LEFT JOIN.\nQ: What fills the right columns for an unmatched row? A: NULL.\nQ: How do you find rows with no match? A: LEFT JOIN then WHERE right_key IS NULL.\nQ: Does COUNT(col) count NULLs? A: No; COUNT(*) does.",
+    "minutes": 8
+  },
+  {
+    "topicId": "tp_sql_joins",
+    "gapType": "explaining",
+    "title": "Re-explain the LEFT JOIN result",
+    "content": "Take your query and explain, row by row, why a student with no enrollment still appears and what value the title column holds. Then say what an INNER JOIN would have returned instead.",
+    "minutes": 10
+  },
+  {
+    "topicId": "tp_sql_joins",
+    "gapType": "adapting",
+    "title": "Twisted join variants",
+    "content": "Take the students-and-courses query and flip it: courses with no students, students enrolled in exactly one course, courses with counts including zero. For each, say which side of the join must be preserved.",
+    "minutes": 20,
+    "questionIds": ["q_sql_anti_join_confirm", "q_sql_left_join_probe"]
+  },
+  {
+    "topicId": "tp_sql_joins",
+    "gapType": "speed",
+    "title": "Timed join queries",
+    "content": "Write a LEFT JOIN with a count from a blank editor against the clock. Target: under four minutes, then under three.",
+    "minutes": 12,
+    "questionIds": ["q_sql_dept_counts_retest"]
+  },
+  {
+    "topicId": "tp_project",
+    "gapType": "concept",
+    "title": "What interviewers listen for in a project answer",
+    "content": "A strong project answer has four parts: the problem and who it is for, what you personally built, how the main components connect, and one decision you can defend against an alternative. Write each part for your own project in one sentence.",
+    "minutes": 10
+  },
+  {
+    "topicId": "tp_project",
+    "gapType": "explaining",
+    "title": "Defend one decision",
+    "content": "Pick one technical decision in your project. Say it aloud in three sentences: what you chose, one real alternative, one concrete cost you accepted. Then find the sentence that is vaguest and rewrite it with a specific detail.",
+    "minutes": 12
+  },
+  {
+    "topicId": "tp_project",
+    "gapType": "adapting",
+    "title": "Change the requirement",
+    "content": "Take your project and change one requirement: 100 times more users, half the deadline, or a database outage. Write what you would change first and why. Practise saying it in under a minute.",
+    "minutes": 15
+  },
+  {
+    "topicId": "tp_hr_communication",
+    "gapType": "structure",
+    "title": "Situation, Action, Result",
+    "content": "Every behavioural answer needs three parts: the Situation (context and stakes), your Action (what you did, step by step) and the Result (what changed, ideally with a number). Take one story and write one sentence for each part, in that order, before you say it aloud.",
+    "minutes": 10
+  },
+  {
+    "topicId": "tp_hr_communication",
+    "gapType": "vague",
+    "title": "Make the story concrete",
+    "content": "Rewrite your story so it names a real project, your own role (I, not we), and a number or outcome. Replace every general phrase such as 'we worked hard' with what actually happened.",
+    "minutes": 12
+  },
+  {
+    "topicId": "tp_hr_communication",
+    "gapType": "followup",
+    "title": "Survive the follow-up",
+    "content": "For your story, list three follow-ups an interviewer could ask: what would you do differently, why that choice, what did you learn. Answer each in two sentences without contradicting the original story.",
+    "minutes": 12
+  },
+  {
+    "topicId": null,
+    "gapType": "recall",
+    "title": "Recall practice",
+    "content": "Write down everything you remember about this topic from memory, then check your notes and fill the gaps. Turn each gap into a flashcard and review them twice today.",
+    "minutes": 8
+  },
+  {
+    "topicId": null,
+    "gapType": "concept",
+    "title": "Concept explainer",
+    "content": "Re-read the core idea of this topic from your notes, then explain it to an imaginary beginner using one small example. If you get stuck, that is the exact idea to study again.",
+    "minutes": 10
+  },
+  {
+    "topicId": null,
+    "gapType": "coding",
+    "title": "Debugging drill",
+    "content": "Take your failing solution and trace it by hand on the smallest failing input. Write down the value of each variable at every step until the output first differs from the expected one, then fix that line.",
+    "minutes": 15
+  },
+  {
+    "topicId": null,
+    "gapType": "explaining",
+    "title": "Re-explain drill",
+    "content": "Explain your solution aloud in three sentences, each giving a reason rather than restating code. Then check the explanation against the rubric for this topic.",
+    "minutes": 10
+  },
+  {
+    "topicId": null,
+    "gapType": "adapting",
+    "title": "Twisted variant drill",
+    "content": "Change one assumption of the problem you solved, then write which part of your solution breaks and change only that part.",
+    "minutes": 20
+  },
+  {
+    "topicId": null,
+    "gapType": "speed",
+    "title": "Timed practice",
+    "content": "Solve a problem you already understand against the clock. Set a target a little under your last time and repeat until you reach it.",
+    "minutes": 15
+  },
+  {
+    "topicId": null,
+    "gapType": "structure",
+    "title": "Answer structure drill",
+    "content": "Give your answer in three labelled parts: Situation, Action, Result.",
+    "minutes": 10
+  },
+  {
+    "topicId": null,
+    "gapType": "vague",
+    "title": "Make it concrete",
+    "content": "Add a real example, your own role and a number to your answer.",
+    "minutes": 12
+  },
+  {
+    "topicId": null,
+    "gapType": "followup",
+    "title": "Follow-up practice",
+    "content": "List three follow-up questions for your answer and answer each without contradicting your first answer.",
+    "minutes": 12
+  }
+]

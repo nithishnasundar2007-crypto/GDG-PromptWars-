@@ -1,14 +1,17 @@
 # Seed bank (owner: Uthai)
 
-- `companies/*.json` — one file per company, shaped like `Company` (contracts/types.ts).
-- `topics.json` — every `Topic` referenced by any company or question.
-- `questions/<topic>/*.json` — one file per question, shaped like `Question`.
-- `drills/*.json` — not yet started; shaped like `Drill`, keyed by `gapType`.
+- `companies/*.json` — sprint scope: one company, three rounds. `companies/two-week/*.json` — two-week scope: Zoho (extended) and Freshworks.
+- `topics.json` — sprint topics (Graphs, SQL Joins, Project Explanation, Behavioural). `topics.two-week.json` — the 8 extra two-week topics (12 in total).
+- `questions/<topic>/*.json` — one file per `Question`. Every ladder topic has a `probe`, `confirm` and `retest` question. Ids ending in `_drill` are drill-only practice questions and are never asked in a ladder.
+- `drills/templates.json` — drill text per (topic, gap type), with a generic fallback per gap type (`topicId: null`). `drills/gap-kinds.json` maps gap type to drill kind.
+- `approaches.json` — the approach revealed when the Hint step fails, keyed by question id.
+- `debrief-keywords.json` — keywords used to match a logged interview question to a topic.
 
-Only `q_bfs_probe` (graphs, role `probe`) exists so far, as a worked example of
-the shape. Per the PRD's sprint scope (§8.1) and `scripts/validate-seeds`,
-every in-scope topic-step needs a `probe`, `confirm` and `retest` question —
-that curation (with rubrics, hint, variant and hidden tests hand-checked) is
-Uthai's M1 work, not something this scaffold invents.
+Test-case convention (to be agreed with grading, see the hand-off notes): Python
+`input` is a JSON array of the function's arguments and `expected` is the JSON
+of the return value; SQL `input` is a setup script (schema + rows) and
+`expected` is the JSON array of result rows, so every SQL question orders its output.
 
-Run `npm run validate-seeds` from the repo root to check shape + coverage.
+Only the sprint topics have questions so far. The eight extra two-week topics
+are defined but have no questions yet, and the planner skips topics without
+questions. Run `npm run validate-seeds` from the repo root to check shape and coverage.

@@ -1,0 +1,17 @@
+{
+  "id": "q_bfs_debug_drill",
+  "topicId": "tp_graphs",
+  "track": "technical",
+  "role": "confirm",
+  "prompt": "This BFS is meant to return the fewest edges from start to target (or -1), but every answer it gives is wrong. Find the bug and fix it.",
+  "lang": "python",
+  "starterCode": "from collections import deque\n\ndef shortest_path(graph, start, target):\n    queue = deque([(start, 1)])\n    seen = {start}\n    while queue:\n        node, dist = queue.popleft()\n        if node == target:\n            return dist\n        for nxt in graph.get(node, []):\n            if nxt not in seen:\n                seen.add(nxt)\n                queue.append((nxt, dist + 1))\n    return -1\n",
+  "hint": "Check what distance the start node itself is given.",
+  "rubrics": {},
+  "tests": [
+    { "id": "t1", "input": "[{\"A\":[\"B\"],\"B\":[\"A\"]},\"A\",\"B\"]", "expected": "1", "hidden": false },
+    { "id": "t2", "input": "[{\"A\":[\"B\",\"C\"],\"B\":[\"D\"],\"C\":[\"D\"],\"D\":[]},\"A\",\"D\"]", "expected": "2", "hidden": true },
+    { "id": "t3", "input": "[{\"A\":[\"B\"],\"B\":[\"A\"]},\"A\",\"A\"]", "expected": "0", "hidden": true }
+  ],
+  "targetTimeMs": { "apply": 300000 }
+}

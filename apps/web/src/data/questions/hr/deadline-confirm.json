@@ -1,0 +1,26 @@
+{
+  "id": "q_hr_deadline_confirm",
+  "topicId": "tp_hr_communication",
+  "track": "hr",
+  "role": "confirm",
+  "prompt": "Describe a time you had to deliver something under a tight deadline. How did you handle it?",
+  "hint": "Use Situation, Action, Result: what was the deadline, what did you do, and what was delivered?",
+  "rubrics": {
+    "structure": [
+      { "id": "hrd_s1", "text": "Describes the situation and the deadline", "required": true },
+      { "id": "hrd_s2", "text": "Describes the actions the student took", "required": true },
+      { "id": "hrd_s3", "text": "Describes the result", "required": true }
+    ],
+    "specifics": [
+      { "id": "hrd_p1", "text": "Gives a concrete, real example rather than a general statement", "required": true },
+      { "id": "hrd_p2", "text": "States the student's own contribution", "required": true },
+      { "id": "hrd_p3", "text": "Includes a number, date or measurable outcome", "required": false }
+    ],
+    "followup": [
+      { "id": "hrd_f1", "text": "Answers the follow-up consistently with the original story", "required": true },
+      { "id": "hrd_f2", "text": "Names a concrete trade-off they made", "required": true }
+    ]
+  },
+  "targetTimeMs": { "structure": 120000, "specifics": 90000, "followup": 90000 },
+  "followUp": "What did you decide to leave out to meet the deadline, and would you make the same call again?"
+}

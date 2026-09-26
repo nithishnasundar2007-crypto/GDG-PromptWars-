@@ -1,0 +1,28 @@
+{
+  "id": "q_sql_debug_drill",
+  "topicId": "tp_sql_joins",
+  "track": "technical",
+  "role": "confirm",
+  "prompt": "This query should list every student with their course title (students with no enrollment show a NULL title, ordered by name then title) but it silently drops some students. Find the bug and fix it.",
+  "lang": "sql",
+  "starterCode": "SELECT s.name, c.title\nFROM students s\nJOIN enrollments e ON e.student_id = s.id\nJOIN courses c ON c.id = e.course_id\nORDER BY s.name, c.title;\n",
+  "hint": "Which students disappear, and what kind of join removes rows that have no match?",
+  "rubrics": {},
+  "tests": [
+    {
+      "id": "t1",
+      "input": "CREATE TABLE students(id INTEGER, name TEXT); CREATE TABLE courses(id INTEGER, title TEXT); CREATE TABLE enrollments(student_id INTEGER, course_id INTEGER); INSERT INTO students VALUES (1,'Asha'),(2,'Ravi'); INSERT INTO courses VALUES (10,'Math'); INSERT INTO enrollments VALUES (1,10);",
+      "expected": "[[\"Asha\",\"Math\"],[\"Ravi\",null]]",
+      "hidden": false
+    },
+    {
+      "id": "t2",
+      "input": "CREATE TABLE students(id INTEGER, name TEXT); CREATE TABLE courses(id INTEGER, title TEXT); CREATE TABLE enrollments(student_id INTEGER, course_id INTEGER); INSERT INTO students VALUES (1,'Asha'),(2,'Ravi'),(3,'Meena'); INSERT INTO courses VALUES (10,'Math'),(20,'Physics'); INSERT INTO enrollments VALUES (1,10),(1,20);",
+      "expected": "[[\"Asha\",\"Math\"],[\"Asha\",\"Physics\"],[\"Meena\",null],[\"Ravi\",null]]",
+      "hidden": true
+    }
+  ],
+  "targetTimeMs": {
+    "apply": 240000
+  }
+}

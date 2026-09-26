@@ -1,0 +1,11 @@
+{
+  "recall": "flashcards",
+  "concept": "explainer",
+  "coding": "debug",
+  "explaining": "reexplain",
+  "adapting": "variants",
+  "speed": "timed",
+  "structure": "explainer",
+  "vague": "reexplain",
+  "followup": "reexplain"
+}

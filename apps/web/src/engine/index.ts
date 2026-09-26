@@ -4,7 +4,7 @@
 // this folder.
 
 export { nextStep, TECHNICAL_TRANSITIONS, HR_TRANSITIONS } from "./ladder";
-export { updateGaps, type GapOutcome } from "./gaps";
+export { updateGaps, isSlow, DEFAULT_SLOW_FACTOR, type GapOutcome } from "./gaps";
 export { getCompanies, getRoundMap } from "./content";
 export { createReadinessModule } from "./readiness";
 export { createPlannerModule } from "./planner";
@@ -12,3 +12,5 @@ export { createDrillsModule } from "./drills";
 export { createSessionModule } from "./session";
 export { createDebriefModule } from "./debrief";
 export { InMemoryRepository, type Repository } from "./store";
+export { EngineError, errorCodeOf } from "./errors";
+export type { EngineDeps, GradeStepFn } from "./deps";

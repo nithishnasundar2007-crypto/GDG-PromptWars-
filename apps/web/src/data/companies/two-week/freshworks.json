@@ -1,0 +1,34 @@
+{
+  "id": "co_freshworks",
+  "name": "Freshworks",
+  "rounds": [
+    {
+      "id": "rd_fw_coding",
+      "name": "Online Coding",
+      "order": 1,
+      "topics": [
+        { "topicId": "tp_arrays_strings", "weight": 5 },
+        { "topicId": "tp_graphs", "weight": 4 },
+        { "topicId": "tp_dp", "weight": 4 },
+        { "topicId": "tp_sql_joins", "weight": 3 }
+      ]
+    },
+    {
+      "id": "rd_fw_technical",
+      "name": "Technical",
+      "order": 2,
+      "topics": [
+        { "topicId": "tp_project", "weight": 4 },
+        { "topicId": "tp_transactions", "weight": 4 },
+        { "topicId": "tp_os_deadlocks", "weight": 3 },
+        { "topicId": "tp_oop", "weight": 3 }
+      ]
+    },
+    {
+      "id": "rd_fw_hr",
+      "name": "Managerial + HR",
+      "order": 3,
+      "topics": [{ "topicId": "tp_hr_communication", "weight": 3 }]
+    }
+  ]
+}

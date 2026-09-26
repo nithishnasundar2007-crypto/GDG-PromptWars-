@@ -1,0 +1,89 @@
+{
+  "id": "q_sql_left_join_probe",
+  "topicId": "tp_sql_joins",
+  "track": "technical",
+  "role": "probe",
+  "prompt": "Tables: students(id, name), courses(id, title), enrollments(student_id, course_id). Write one query returning every student's name and the title of each course they are enrolled in. Students with no enrollment must still appear, with a NULL title. Order by name, then title.",
+  "lang": "sql",
+  "starterCode": "SELECT ...\nFROM students\n",
+  "hint": "Which join keeps every row from the left table even when the right table has no match?",
+  "rubrics": {
+    "recognize": [
+      {
+        "id": "sqlj_r1",
+        "text": "Names LEFT JOIN (or LEFT OUTER JOIN) as the join to use",
+        "required": true
+      },
+      {
+        "id": "sqlj_r2",
+        "text": "Says students must be the preserved (left) side so unmatched students still appear",
+        "required": true
+      }
+    ],
+    "hint": [
+      {
+        "id": "sqlj_h1",
+        "text": "Names LEFT JOIN (or LEFT OUTER JOIN) as the join to use",
+        "required": true
+      }
+    ],
+    "explain": [
+      {
+        "id": "sqlj_e1",
+        "text": "Explains that unmatched left rows are kept with NULLs for the right table's columns",
+        "required": true
+      },
+      {
+        "id": "sqlj_e2",
+        "text": "Explains that an INNER JOIN would drop students with no enrollment",
+        "required": false
+      }
+    ]
+  },
+  "tests": [
+    {
+      "id": "t1",
+      "input": "CREATE TABLE students(id INTEGER, name TEXT); CREATE TABLE courses(id INTEGER, title TEXT); CREATE TABLE enrollments(student_id INTEGER, course_id INTEGER); INSERT INTO students VALUES (1,'Asha'),(2,'Ravi'); INSERT INTO courses VALUES (10,'Math'); INSERT INTO enrollments VALUES (1,10);",
+      "expected": "[[\"Asha\",\"Math\"],[\"Ravi\",null]]",
+      "hidden": false
+    },
+    {
+      "id": "t2",
+      "input": "CREATE TABLE students(id INTEGER, name TEXT); CREATE TABLE courses(id INTEGER, title TEXT); CREATE TABLE enrollments(student_id INTEGER, course_id INTEGER); INSERT INTO students VALUES (1,'Asha'),(2,'Ravi'),(3,'Meena'); INSERT INTO courses VALUES (10,'Math'),(20,'Physics'),(30,'Chem'); INSERT INTO enrollments VALUES (1,10),(1,20),(2,10);",
+      "expected": "[[\"Asha\",\"Math\"],[\"Asha\",\"Physics\"],[\"Meena\",null],[\"Ravi\",\"Math\"]]",
+      "hidden": true
+    },
+    {
+      "id": "t3",
+      "input": "CREATE TABLE students(id INTEGER, name TEXT); CREATE TABLE courses(id INTEGER, title TEXT); CREATE TABLE enrollments(student_id INTEGER, course_id INTEGER); INSERT INTO students VALUES (1,'Asha'),(2,'Ravi'); INSERT INTO courses VALUES (10,'Math');",
+      "expected": "[[\"Asha\",null],[\"Ravi\",null]]",
+      "hidden": true
+    }
+  ],
+  "variant": {
+    "prompt": "Twist: now list every COURSE with the number of students enrolled in it, including courses nobody joined (count 0). Columns: title, student_count. Order by title.",
+    "starterCode": "SELECT ...\nFROM courses\n",
+    "tests": [
+      {
+        "id": "t4",
+        "input": "CREATE TABLE students(id INTEGER, name TEXT); CREATE TABLE courses(id INTEGER, title TEXT); CREATE TABLE enrollments(student_id INTEGER, course_id INTEGER); INSERT INTO students VALUES (1,'Asha'),(2,'Ravi'); INSERT INTO courses VALUES (10,'Math'),(20,'Physics'),(30,'Chem'); INSERT INTO enrollments VALUES (1,10),(2,10),(1,20);",
+        "expected": "[[\"Chem\",0],[\"Math\",2],[\"Physics\",1]]",
+        "hidden": true
+      },
+      {
+        "id": "t5",
+        "input": "CREATE TABLE students(id INTEGER, name TEXT); CREATE TABLE courses(id INTEGER, title TEXT); CREATE TABLE enrollments(student_id INTEGER, course_id INTEGER); INSERT INTO courses VALUES (10,'Math');",
+        "expected": "[[\"Math\",0]]",
+        "hidden": true
+      }
+    ]
+  },
+  "targetTimeMs": {
+    "recognize": 45000,
+    "hint": 30000,
+    "apply": 240000,
+    "explain": 75000,
+    "transfer": 240000
+  },
+  "followUp": "Explain what happens to a student with no enrollment under a LEFT JOIN, and what an INNER JOIN would have done to that row."
+}

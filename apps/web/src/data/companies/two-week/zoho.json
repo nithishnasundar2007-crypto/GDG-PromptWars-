@@ -1,0 +1,35 @@
+{
+  "id": "co_zoho",
+  "name": "Zoho",
+  "rounds": [
+    {
+      "id": "rd_coding",
+      "name": "Coding",
+      "order": 1,
+      "topics": [
+        { "topicId": "tp_graphs", "weight": 5 },
+        { "topicId": "tp_arrays_strings", "weight": 5 },
+        { "topicId": "tp_trees", "weight": 4 },
+        { "topicId": "tp_dp", "weight": 3 },
+        { "topicId": "tp_sql_joins", "weight": 4 }
+      ]
+    },
+    {
+      "id": "rd_technical",
+      "name": "Technical",
+      "order": 2,
+      "topics": [
+        { "topicId": "tp_project", "weight": 3 },
+        { "topicId": "tp_normalization", "weight": 3 },
+        { "topicId": "tp_os_processes", "weight": 3 },
+        { "topicId": "tp_oop", "weight": 4 }
+      ]
+    },
+    {
+      "id": "rd_hr",
+      "name": "HR",
+      "order": 3,
+      "topics": [{ "topicId": "tp_hr_communication", "weight": 2 }]
+    }
+  ]
+}

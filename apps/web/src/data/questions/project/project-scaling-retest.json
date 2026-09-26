@@ -1,0 +1,34 @@
+{
+  "id": "q_project_scaling_retest",
+  "topicId": "tp_project",
+  "track": "technical",
+  "role": "retest",
+  "prompt": "Think about your project running with 1,000 real users at the same time. What would break first, how would you find out, and how would you fix it?",
+  "hint": "Pick the single most likely bottleneck in your own project, then say how you would measure it and what you would change.",
+  "rubrics": {
+    "recognize": [
+      { "id": "psr_r1", "text": "Names a specific bottleneck or failure point in their own project", "required": true },
+      { "id": "psr_r2", "text": "Says why that part would break first", "required": true }
+    ],
+    "hint": [
+      { "id": "psr_h1", "text": "Names a specific bottleneck or failure point in their own project", "required": true }
+    ],
+    "apply": [
+      { "id": "psr_a1", "text": "Describes how to detect or measure the problem (logs, metrics, load test)", "required": true },
+      { "id": "psr_a2", "text": "Describes a concrete fix tied to the bottleneck", "required": true }
+    ],
+    "explain": [
+      { "id": "psr_e1", "text": "Explains why the fix removes the bottleneck rather than moving it", "required": true },
+      { "id": "psr_e2", "text": "Names a cost or new risk the fix introduces", "required": false }
+    ],
+    "transfer": [
+      { "id": "psr_t1", "text": "Applies the reasoning to the new failure scenario and names what to change", "required": true }
+    ]
+  },
+  "variant": {
+    "prompt": "Twist: the database goes down for ten minutes during peak load. What does your project do, and what should it do?",
+    "tests": []
+  },
+  "targetTimeMs": { "recognize": 90000, "hint": 60000, "apply": 150000, "explain": 120000, "transfer": 120000 },
+  "followUp": "Why would that fix work, and what new problem could it cause?"
+}
