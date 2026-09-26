@@ -13,3 +13,5 @@ export { AIService, getAiCallLogs } from "./ai";
 export { PROMPT_REGISTRY, type PromptId } from "./prompts";
 export { configureGrading, type GradingDeps } from "./deps";
 export { GradingError } from "./errors";
+export { runEval } from "./eval";
+export type { EvalReport, LabelledAnswer } from "./eval";

@@ -11,6 +11,7 @@
     "format": "prettier --write .",
     "test": "vitest run",
     "test:watch": "vitest",
+    "eval": "vitest run --config vitest.eval.config.ts",
     "preview": "vite preview"
   },
   "dependencies": {
