@@ -37,10 +37,10 @@ function capOutput(text: string): string {
 }
 
 function formatResult(rows: { columns: string[]; values: unknown[][] }[]): string {
-  if (rows.length === 0) return "";
-  const { columns, values } = rows[0]!;
-  const lines = values.map((row) => row.map(String).join(","));
-  return [columns.join(","), ...lines].join("\n");
+  const first = rows[0];
+  if (!first) return "";
+  const lines = first.values.map((row) => row.map(String).join(","));
+  return [first.columns.join(","), ...lines].join("\n");
 }
 
 /**
@@ -49,22 +49,25 @@ function formatResult(rows: { columns: string[]; values: unknown[][] }[]): strin
  * one test. A syntax/runtime SQL error becomes a failed TestResult, never an
  * API error.
  */
-export async function runOneSqlTest(sqlJs: SqlJsStatic, code: string, test: TestCase): Promise<TestResult> {
+// sql.js's Database#run/#exec are synchronous — this stays a plain function
+// (not `async`) since it has no real await, but keeps a Promise-returning
+// signature so worker.ts can await it uniformly alongside the Python path.
+export function runOneSqlTest(sqlJs: SqlJsStatic, code: string, test: TestCase): Promise<TestResult> {
   const db = new sqlJs.Database();
   try {
     db.run(test.input);
     const rows = db.exec(code);
     const actual = capOutput(formatResult(rows));
     const passed = outputsMatch(actual, test.expected);
-    return {
+    return Promise.resolve({
       testId: test.id,
       passed,
       timedOut: false,
       ...(test.hidden ? {} : { input: test.input, expected: test.expected, actual }),
-      ...(passed ? {} : { error: test.hidden ? undefined : `Expected ${test.expected}, but got ${actual}` }),
-    };
+      ...(!passed && !test.hidden ? { error: `Expected ${test.expected}, but got ${actual}` } : {}),
+    });
   } catch (e) {
-    return { testId: test.id, passed: false, timedOut: false, error: e instanceof Error ? e.message : String(e) };
+    return Promise.resolve({ testId: test.id, passed: false, timedOut: false, error: e instanceof Error ? e.message : String(e) });
   } finally {
     db.close();
   }

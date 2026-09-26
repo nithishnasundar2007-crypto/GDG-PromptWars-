@@ -18,12 +18,14 @@ const envSchema = z.object({
     .optional()
     .transform((v) => (v ? Number(v) : 60)),
   // App Check enforcement is genuinely unverifiable in this sandbox (no live
-  // Firebase project/credentials — see docs/SECURITY.md). NODE_ENV=production
-  // without an explicit dev-bypass opt-in is the only way to require it.
+  // Firebase project/credentials — see docs/SECURITY.md). An explicit
+  // "true"/"false" always wins; left unset, the safe default flips on
+  // NODE_ENV so a real deployment doesn't need to remember to turn this off
+  // — only local/test runs (NODE_ENV !== "production") bypass by default.
   APP_CHECK_DEV_BYPASS: z
     .string()
     .optional()
-    .transform((v) => v !== "false"), // default true (dev bypass ON) unless explicitly disabled
+    .transform((v) => (v === undefined ? process.env.NODE_ENV !== "production" : v !== "false")),
   FIREBASE_PROJECT_ID: z.string().optional(),
 });
 

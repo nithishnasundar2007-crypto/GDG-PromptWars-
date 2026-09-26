@@ -30,7 +30,7 @@ function mockAiProxy(handler: (body: FetchBody) => unknown): void {
     "fetch",
     vi.fn(async (url: string, init: RequestInit) => {
       const route = Object.keys(ROUTE_TO_PROMPT_ID).find((r) => url.endsWith(r));
-      const promptId = route ? ROUTE_TO_PROMPT_ID[route]! : "unknown";
+      const promptId = (route ? ROUTE_TO_PROMPT_ID[route] : undefined) ?? "unknown";
       const input: unknown = JSON.parse(init.body as string);
       return { ok: true, json: async () => handler({ promptId, input }) };
     }),

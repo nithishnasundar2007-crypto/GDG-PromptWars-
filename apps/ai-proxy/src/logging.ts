@@ -11,7 +11,7 @@ interface ProxyCallLog {
   reason?: string; // a short code like "origin", "rate_limit", "app_check" — never request content
 }
 
-// eslint-disable-next-line no-console -- this IS the logger; nothing else may use console directly.
 export function logProxyCall(entry: ProxyCallLog): void {
+  // eslint-disable-next-line no-console -- this IS the logger; nothing else may use console directly.
   console.log(JSON.stringify({ at: new Date().toISOString(), ...entry }));
 }

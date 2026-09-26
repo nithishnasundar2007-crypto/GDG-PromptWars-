@@ -68,7 +68,6 @@ export function runInWorker(code: string, lang: Lang, tests: TestCase[]): Promis
   return new Promise((resolve, reject) => {
     const w = getWorker();
     const runId = crypto.randomUUID();
-    let completedCount = 0;
     let perTestTimer: ReturnType<typeof setTimeout> | undefined;
     let graceTimer: ReturnType<typeof setTimeout> | undefined;
 
@@ -106,7 +105,6 @@ export function runInWorker(code: string, lang: Lang, tests: TestCase[]): Promis
       if ("runId" in message && message.runId !== runId) return;
 
       if (message.type === "test-progress") {
-        completedCount = message.completedCount;
         armPerTestTimer();
         return;
       }
@@ -114,11 +112,12 @@ export function runInWorker(code: string, lang: Lang, tests: TestCase[]): Promis
         clearTimeout(totalTimer);
         clearTimers();
         w.removeEventListener("message", onMessage);
+        const firstFailure = message.results.find((r) => !r.passed);
         resolve({
           passed: message.results.every((r) => r.passed),
           results: message.results,
           runtimeMs: message.runtimeMs,
-          ...(message.results.find((r) => !r.passed) ? { firstFailure: message.results.find((r) => !r.passed) } : {}),
+          ...(firstFailure ? { firstFailure } : {}),
         });
         return;
       }
@@ -133,6 +132,5 @@ export function runInWorker(code: string, lang: Lang, tests: TestCase[]): Promis
     w.addEventListener("message", onMessage);
     armPerTestTimer();
     w.postMessage({ type: "run", runId, code, lang, tests });
-    void completedCount; // retained for future progress-reporting UI, unused here
   });
 }

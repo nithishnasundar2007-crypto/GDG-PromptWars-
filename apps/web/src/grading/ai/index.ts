@@ -49,7 +49,9 @@ const PROMPT_ROUTES: Record<PromptId, string> = {
 
 async function callAiProxy(promptId: PromptId, input: unknown): Promise<unknown> {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), AI_TIMEOUT_MS);
+  const timeout = setTimeout(() => {
+    controller.abort();
+  }, AI_TIMEOUT_MS);
   try {
     const response = await fetch(`${config.aiProxyUrl}${PROMPT_ROUTES[promptId]}`, {
       method: "POST",
@@ -84,7 +86,10 @@ export async function generate<T>(
 ): Promise<Result<T>> {
   const start = Date.now();
   let retries = 0;
-  let lastError: ApiError | undefined;
+  // Always a real ApiError (never undefined) so the final `return err(...)`
+  // below needs no non-null assertion — both loop branches below overwrite
+  // this on every iteration, this is just a safe starting value for TS.
+  let lastError: ApiError = { code: "GEMINI_FAILED", message: "Gemini call failed", retryable: true };
 
   for (let attempt = 0; attempt < 2; attempt++) {
     if (attempt > 0) {
@@ -113,9 +118,9 @@ export async function generate<T>(
     promptId,
     latencyMs: Date.now() - start,
     retries,
-    outcome: lastError?.code === "GEMINI_BAD_JSON" ? "bad_json" : "failed",
+    outcome: lastError.code === "GEMINI_BAD_JSON" ? "bad_json" : "failed",
   });
-  return err(lastError!.code, lastError!.message);
+  return err(lastError.code, lastError.message);
 }
 
 export const AIService = { generate };

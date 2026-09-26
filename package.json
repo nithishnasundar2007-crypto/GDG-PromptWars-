@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "npm run dev -w web",
     "build": "npm run build -w web && npm run build -w ai-proxy",
-    "lint": "npm run lint -w web",
+    "lint": "npm run lint -w web && npm run lint -w ai-proxy",
     "typecheck": "npm run typecheck -w web && npm run typecheck -w ai-proxy",
     "test": "npm run test -w web && npm run test -w ai-proxy",
     "validate-seeds": "node scripts/validate-seeds.mjs",

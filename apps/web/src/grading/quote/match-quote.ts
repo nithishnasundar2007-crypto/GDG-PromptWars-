@@ -48,21 +48,26 @@ interface TokenIndex {
 }
 
 function buildTokenIndex(normAnswer: string, tokens: string[]): TokenIndex {
-  const starts = new Array<number>(tokens.length + 1);
+  const starts: number[] = [];
   let offset = 0;
-  for (let i = 0; i < tokens.length; i++) {
-    starts[i] = offset;
-    offset += tokens[i]!.length + 1; // +1 for the single joining space
+  for (const token of tokens) {
+    starts.push(offset);
+    offset += token.length + 1; // +1 for the single joining space
   }
-  starts[tokens.length] = normAnswer.length;
+  starts.push(normAnswer.length);
   return { text: normAnswer, starts };
 }
 
 /** Extracts the substring covering tokens [start, start+size) without any array allocation. */
 function windowText(index: TokenIndex, start: number, size: number): string {
-  const from = index.starts[start]!;
+  // `start` and `start + size` are always in [0, index.starts.length) by
+  // construction (callers only ever pass windows inside the token count), so
+  // these fallbacks are unreachable in practice — kept instead of a
+  // non-null assertion so this stays a real bounds-safe read.
+  const from = index.starts[start] ?? 0;
   const tokenCount = index.starts.length - 1;
-  const to = start + size < tokenCount ? index.starts[start + size]! - 1 : index.text.length;
+  const nextStart = start + size < tokenCount ? index.starts[start + size] : undefined;
+  const to = nextStart !== undefined ? nextStart - 1 : index.text.length;
   return index.text.slice(from, to);
 }
 

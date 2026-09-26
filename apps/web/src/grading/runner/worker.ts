@@ -45,12 +45,11 @@ async function handleRun(request: RunRequestMessage): Promise<void> {
         post({ type: "test-progress", runId: request.runId, completedCount: results.length } satisfies TestProgressMessage);
       }
     } else {
+      // SQL execution here is synchronous (sql.js has no timeout signal of
+      // its own), so a test can never come back with timedOut: true — the
+      // earlier-timeout skip only applies to the Python path above.
       const sqlJs = await loadSqlJs();
       for (const test of request.tests) {
-        if (earlierTimedOut) {
-          results.push({ testId: test.id, passed: false, timedOut: false, error: "Not run: an earlier test timed out" });
-          continue;
-        }
         const result = await runOneSqlTest(sqlJs, request.code, test);
         results.push(result);
         post({ type: "test-progress", runId: request.runId, completedCount: results.length } satisfies TestProgressMessage);

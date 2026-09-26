@@ -82,7 +82,7 @@ function reduceTraceback(raw: string): string {
   const lineMatch = [...raw.matchAll(/line (\d+)/g)].pop();
   const lineNumber = lineMatch ? `on line ${lineMatch[1]}: ` : "";
   const colonIndex = last.indexOf(":");
-  if (colonIndex === -1) return `${last}`;
+  if (colonIndex === -1) return last;
   const errorType = last.slice(0, colonIndex).trim();
   const message = last.slice(colonIndex + 1).trim();
   return `${errorType} ${lineNumber}${message}`.replace("  ", " ").trim();
@@ -116,7 +116,7 @@ export async function runOneTest(pyodide: PyodideInstance, code: string, test: T
       passed,
       timedOut: false,
       ...(test.hidden ? {} : { input: test.input, expected: test.expected, actual }),
-      ...(passed ? {} : { error: test.hidden ? undefined : `Expected ${test.expected}, but got ${actual}` }),
+      ...(!passed && !test.hidden ? { error: `Expected ${test.expected}, but got ${actual}` } : {}),
     };
   } catch (e) {
     const message = e instanceof Error ? e.message : String(e);
@@ -125,7 +125,7 @@ export async function runOneTest(pyodide: PyodideInstance, code: string, test: T
       testId: test.id,
       passed: false,
       timedOut: isInterrupt,
-      error: isInterrupt ? undefined : reduceTraceback(capOutput(message)),
+      ...(isInterrupt ? {} : { error: reduceTraceback(capOutput(message)) }),
     };
   }
 }

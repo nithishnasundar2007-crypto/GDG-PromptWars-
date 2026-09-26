@@ -24,12 +24,20 @@ boolean) is correct. What those tests do **not** and cannot prove is that a
 real App Check token from a real Firebase project is actually verified
 correctly end-to-end — that requires a live project.
 
-`APP_CHECK_DEV_BYPASS=true` (the default, including in this sandbox) skips
-verification entirely and returns `true` unconditionally — this is
-appropriate for local development only. Before any real deployment,
-`APP_CHECK_DEV_BYPASS` must be set to `false` and `FIREBASE_PROJECT_ID` must
-point at a real project with App Check enabled, or every `/v1/*` route is
-effectively unauthenticated.
+`APP_CHECK_DEV_BYPASS` skips verification entirely and returns `true`
+unconditionally when it's on — appropriate for local development only. An
+explicit `"true"`/`"false"` value always wins; left unset, it defaults to ON
+outside `NODE_ENV=production` and **OFF when `NODE_ENV=production`**, so a
+real deployment is protected by default rather than depending on someone
+remembering to flip a flag (fixed after an initial version of this file
+defaulted it to ON everywhere, including production, unless explicitly
+disabled — see `docs/EVALUATION_AUDIT.md`'s Security section and
+`config.test.ts` for the corrected behavior). A one-time warning is logged
+whenever the bypass is actually active, so it's visibly off rather than
+silently absent. Before any real deployment, confirm `NODE_ENV=production` is
+actually set (or set `APP_CHECK_DEV_BYPASS=false` explicitly) and
+`FIREBASE_PROJECT_ID` points at a real project with App Check enabled, or
+every `/v1/*` route is effectively unauthenticated.
 
 ## Origin allow-list, rate limiting, request size
 

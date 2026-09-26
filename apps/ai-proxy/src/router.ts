@@ -27,11 +27,11 @@ router.get("/v1/health", (_req, res) => {
   res.json({ status: "ok", contractVersion: CONTRACT_VERSION });
 });
 
-async function handleOperation<T extends z.ZodTypeAny>(
+async function handleOperation(
   req: Request,
   res: Response,
   promptId: keyof typeof PROMPTS,
-  bodySchema: T,
+  bodySchema: z.ZodTypeAny,
 ): Promise<void> {
   const clientId = req.ip ?? "unknown";
   const start = Date.now();

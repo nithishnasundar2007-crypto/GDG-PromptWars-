@@ -60,14 +60,14 @@ async function checkSqlJs(): Promise<{ ok: boolean; error?: string }> {
 }
 
 self.onmessage = async (e: MessageEvent<{ type: string }>) => {
-  if (e.data?.type !== "load-check") return;
+  if (e.data.type !== "load-check") return;
   const [pyodide, sqlJs] = await Promise.all([checkPyodide(), checkSqlJs()]);
   const message: LoadCheckResult = {
     type: "load-check-result",
     pyodide: pyodide.ok,
     sqlJs: sqlJs.ok,
-    pyodideError: pyodide.error,
-    sqlJsError: sqlJs.error,
+    ...(pyodide.error !== undefined ? { pyodideError: pyodide.error } : {}),
+    ...(sqlJs.error !== undefined ? { sqlJsError: sqlJs.error } : {}),
   };
   (self as unknown as Worker).postMessage(message);
 };

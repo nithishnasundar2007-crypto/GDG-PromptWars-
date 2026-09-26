@@ -45,7 +45,7 @@ export async function gradeProjectAnswer(
 
   const partial: GradeResult = { step: "explain", passed, rubric };
   const feedback = passed ? undefined : await explain(question, "explain", answer, partial);
-  const grade: GradeResult = { ...partial, feedback };
+  const grade: GradeResult = { ...partial, ...(feedback !== undefined ? { feedback } : {}) };
 
   const card: ProjectCardItem = {
     questionId: pq.id,
@@ -55,7 +55,7 @@ export async function gradeProjectAnswer(
     // text via `question.prompt` above), not string-joined here — the
     // "missing" summary is the closest deterministic proxy when the
     // Explainer call itself failed and fell back.
-    modelOutline: passed ? undefined : (feedback?.missing ?? `Cover: ${missing.join("; ")}.`),
+    ...(passed ? {} : { modelOutline: feedback?.missing ?? `Cover: ${missing.join("; ")}.` }),
   };
 
   return { grade, card };

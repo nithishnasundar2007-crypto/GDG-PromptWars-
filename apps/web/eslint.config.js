@@ -38,16 +38,55 @@ export default tseslint.config(
     },
   },
   {
-    // Only grading/ai's provider adapter may call the ai-proxy / a Gemini SDK.
+    // Nothing in apps/web should ever import a Gemini SDK directly — the
+    // Gemini key and the SDK call both live only in apps/ai-proxy;
+    // grading/ai talks to it over `fetch`, never the SDK (docs/CONFLICTS.md,
+    // "Result-vs-throw adapter" entry's sibling note on the proxy boundary).
+    // Named for both the current (`@google/genai`) and the superseded
+    // (`@google/generative-ai`) package, so a future accidental import of
+    // either is caught immediately, not just the one in use today.
     files: ["src/**/*.{ts,tsx}"],
-    ignores: ["src/grading/ai/**"],
     rules: {
       "no-restricted-imports": [
         "error",
         {
-          paths: [{ name: "@google/generative-ai", message: "Only grading/ai may talk to Gemini." }],
+          paths: [
+            { name: "@google/generative-ai", message: "The Gemini SDK belongs only in apps/ai-proxy; call it through grading/ai's fetch-based proxy client." },
+            { name: "@google/genai", message: "The Gemini SDK belongs only in apps/ai-proxy; call it through grading/ai's fetch-based proxy client." },
+          ],
         },
       ],
     },
+  },
+  {
+    // Backend 1's own code (Suchit) — strict-type-checked, not just
+    // recommended, per hard rule §3.1. Scoped here rather than repo-wide so
+    // it doesn't force type-aware fixes onto engine/screens/shell, which
+    // this session doesn't own.
+    files: ["src/grading/**/*.ts"],
+    extends: [...tseslint.configs.strictTypeChecked],
+    languageOptions: {
+      parserOptions: {
+        project: "./tsconfig.app.json",
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+    rules: {
+      "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
+      "@typescript-eslint/restrict-template-expressions": ["error", { allowNumber: true }],
+    },
+  },
+  {
+    files: ["src/grading/**/*.test.ts"],
+    rules: {
+      "@typescript-eslint/require-await": "off",
+    },
+  },
+  {
+    // tsconfig.app.json deliberately excludes *.ondemand.eval.ts (the real
+    // 30-answer eval run, never part of the type-checked app build) — so it
+    // has no TS project to type-check against here either.
+    files: ["src/grading/**/*.ondemand.eval.ts"],
+    extends: [tseslint.configs.disableTypeChecked],
   },
 );

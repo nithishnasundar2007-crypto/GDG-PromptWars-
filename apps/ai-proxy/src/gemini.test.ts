@@ -2,8 +2,15 @@
 // test calls the real Gemini API (there is no live key in this sandbox).
 
 import { describe, expect, it, vi } from "vitest";
+import { callGemini, callGeminiWithAudio } from "./gemini.js";
 
-const generateContent = vi.fn();
+// vi.mock's factory is hoisted above this file's own top-level code, so a
+// plain `const generateContent = vi.fn()` declared below it would be read
+// before initialization; vi.hoisted runs its callback first, exactly to
+// give a mock factory something already-initialized to close over.
+const { generateContent } = vi.hoisted(() => ({
+  generateContent: vi.fn<(request: unknown) => Promise<{ text: string | undefined }>>(),
+}));
 
 vi.mock("@google/genai", () => ({
   GoogleGenAI: class {
@@ -14,7 +21,6 @@ vi.mock("@google/genai", () => ({
 describe("callGemini", () => {
   it("forwards systemInstruction/temperature/responseSchema and returns response.text", async () => {
     generateContent.mockResolvedValueOnce({ text: '{"ok":true}' });
-    const { callGemini } = await import("./gemini.js");
     const text = await callGemini({
       systemInstruction: "sys",
       userContent: "user content",
@@ -32,7 +38,6 @@ describe("callGemini", () => {
 
   it("throws when Gemini returns no text", async () => {
     generateContent.mockResolvedValueOnce({ text: undefined });
-    const { callGemini } = await import("./gemini.js");
     await expect(
       callGemini({ systemInstruction: "s", userContent: "u", temperature: 0, responseSchema: {} }),
     ).rejects.toThrow(/no text/);
@@ -42,7 +47,6 @@ describe("callGemini", () => {
 describe("callGeminiWithAudio", () => {
   it("sends inline audio data and returns response.text", async () => {
     generateContent.mockResolvedValueOnce({ text: '{"text":"hello"}' });
-    const { callGeminiWithAudio } = await import("./gemini.js");
     const text = await callGeminiWithAudio({
       systemInstruction: "s",
       responseSchema: {},

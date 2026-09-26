@@ -23,15 +23,14 @@ export function verifyRunnerLoads(timeoutMs = 30_000): Promise<RunnerLoadStatus>
     }, timeoutMs);
 
     worker.onmessage = (e: MessageEvent<LoadCheckResult>) => {
-      if (e.data?.type !== "load-check-result") return;
       clearTimeout(timer);
       worker.terminate();
       resolve({
         pyodide: e.data.pyodide,
         sqlJs: e.data.sqlJs,
         timedOut: false,
-        pyodideError: e.data.pyodideError,
-        sqlJsError: e.data.sqlJsError,
+        ...(e.data.pyodideError !== undefined ? { pyodideError: e.data.pyodideError } : {}),
+        ...(e.data.sqlJsError !== undefined ? { sqlJsError: e.data.sqlJsError } : {}),
       });
     };
 

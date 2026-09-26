@@ -59,6 +59,6 @@ export const PROMPTS: Record<PromptId, PromptDef> = {
     temperature: transcribe.temperature,
     systemInstruction: transcribe.systemInstruction,
     responseSchema: transcribe.responseSchema,
-    build: (() => "") as PromptDef["build"], // audio is sent as inline data, not through build()
+    build: () => "", // audio is sent as inline data, not through build()
   },
 };

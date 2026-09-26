@@ -153,16 +153,20 @@ function buildGrade(entry: ScriptEntry): GradeResult {
         passed: entry.passed,
         results: firstFailure ? [firstFailure] : [{ testId: "t2", passed: true, timedOut: false }],
         runtimeMs: 120,
-        firstFailure,
+        // exactOptionalPropertyTypes: an optional field means absent, not
+        // present-with-value-undefined — spread it in only when it exists.
+        ...(firstFailure ? { firstFailure } : {}),
       },
-      feedback: entry.passed
-        ? undefined
+      ...(entry.passed
+        ? {}
         : {
-            whatHappened: "Your BFS visited the target one hop too late.",
-            whyWrong: "An off-by-one in the distance counter overcounts by one hop.",
-            missing: "The distance should increment when nodes are dequeued, not when they're enqueued.",
-            nextDrill: "A debug drill on the same buggy BFS will target this exact bug.",
-          },
+            feedback: {
+              whatHappened: "Your BFS visited the target one hop too late.",
+              whyWrong: "An off-by-one in the distance counter overcounts by one hop.",
+              missing: "The distance should increment when nodes are dequeued, not when they're enqueued.",
+              nextDrill: "A debug drill on the same buggy BFS will target this exact bug.",
+            },
+          }),
     };
   }
   return {
@@ -177,14 +181,16 @@ function buildGrade(entry: ScriptEntry): GradeResult {
         met: entry.passed,
       },
     ],
-    feedback: entry.passed
-      ? undefined
+    ...(entry.passed
+      ? {}
       : {
-          whatHappened: "You named a traversal but didn't say why it's shortest-path safe.",
-          whyWrong: "The point needs the guarantee, not just the algorithm name.",
-          missing: "Unweighted graph + level-by-level visiting = first arrival is shortest.",
-          nextDrill: "A short explainer on BFS's shortest-path guarantee.",
-        },
+          feedback: {
+            whatHappened: "You named a traversal but didn't say why it's shortest-path safe.",
+            whyWrong: "The point needs the guarantee, not just the algorithm name.",
+            missing: "Unweighted graph + level-by-level visiting = first arrival is shortest.",
+            nextDrill: "A short explainer on BFS's shortest-path guarantee.",
+          },
+        }),
   };
 }
 
@@ -376,8 +382,10 @@ export const mockApi: CompassApi = {
     const result: SubmitResult = {
       grade,
       ladder,
-      nextQuestionText: ladder.current === "done" ? undefined : "Next question text would appear here.",
-      revealedApproach: ladder.assisted && entry.step === "recognize" ? "Use BFS: visit nodes level by level from the start." : undefined,
+      ...(ladder.current === "done" ? {} : { nextQuestionText: "Next question text would appear here." }),
+      ...(ladder.assisted && entry.step === "recognize"
+        ? { revealedApproach: "Use BFS: visit nodes level by level from the start." }
+        : {}),
       gapsChanged,
       cellsChanged: [],
     };
@@ -451,20 +459,22 @@ export const mockApi: CompassApi = {
         verifierYes: strong,
         met: strong,
       })),
-      feedback: strong
-        ? undefined
+      ...(strong
+        ? {}
         : {
-            whatHappened: "The answer restated the question rather than naming a specific trade-off.",
-            whyWrong: "No concrete alternative or constraint was named.",
-            missing: "Name the alternative you considered and why you didn't pick it.",
-            nextDrill: "Re-read the project text for the actual constraint that drove this choice.",
-          },
+            feedback: {
+              whatHappened: "The answer restated the question rather than naming a specific trade-off.",
+              whyWrong: "No concrete alternative or constraint was named.",
+              missing: "Name the alternative you considered and why you didn't pick it.",
+              nextDrill: "Re-read the project text for the actual constraint that drove this choice.",
+            },
+          }),
     };
     const card: ProjectCardItem = {
       questionId: pq.id,
       strong,
       missing: strong ? [] : ["a specific alternative", "the constraint that ruled it out"],
-      modelOutline: strong ? undefined : "Mention the alternative, the constraint, and the concrete trade-off.",
+      ...(strong ? {} : { modelOutline: "Mention the alternative, the constraint, and the concrete trade-off." }),
     };
     return ok({ grade, card });
   },

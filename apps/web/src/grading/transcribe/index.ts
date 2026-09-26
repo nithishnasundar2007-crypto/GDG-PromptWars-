@@ -57,7 +57,9 @@ export async function transcribe(audio: Blob): Promise<{ text: string }> {
 
   const audioBase64 = await blobToBase64(audio);
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), AI_TIMEOUT_MS);
+  const timeout = setTimeout(() => {
+    controller.abort();
+  }, AI_TIMEOUT_MS);
   try {
     const response = await fetch(`${webConfig.aiProxyUrl}/v1/transcribe`, {
       method: "POST",
