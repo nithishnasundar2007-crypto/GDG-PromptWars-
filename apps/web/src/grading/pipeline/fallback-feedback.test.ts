@@ -31,6 +31,20 @@ describe("fallbackFeedbackForCode", () => {
     expect(feedback.whatHappened).toBeTruthy();
     expect(feedback.nextDrill).toBeTruthy();
   });
+
+  it("uses the runner's own reduced error message when there's no expected/actual pair", () => {
+    const failure = testResult({ error: "IndexError on line 7: list index out of range" });
+    const run: RunResult = { passed: false, results: [failure], runtimeMs: 10, firstFailure: failure };
+    const feedback = fallbackFeedbackForCode(run);
+    expect(feedback.whyWrong).toBe("IndexError on line 7: list index out of range");
+  });
+
+  it("uses a generic message when there's neither expected/actual nor an error string", () => {
+    const failure = testResult({});
+    const run: RunResult = { passed: false, results: [failure], runtimeMs: 10, firstFailure: failure };
+    const feedback = fallbackFeedbackForCode(run);
+    expect(feedback.whyWrong).toBe("The output did not match what was expected.");
+  });
 });
 
 describe("fallbackFeedbackForRubric", () => {

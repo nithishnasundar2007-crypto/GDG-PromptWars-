@@ -157,6 +157,18 @@ describe("gradeRubricStep", () => {
     expect(result.rubric.find((r) => r.pointId === "rp_2")?.met).toBe(false);
   });
 
+  it("a failed Grader call fails the whole step rather than fabricating a grade", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => {
+        throw new Error("proxy down");
+      }),
+    );
+    const result = await gradeRubricStep(question, "recognize", "anything");
+    expect(result.passed).toBe(false);
+    expect(result.rubric).toEqual([{ pointId: "rp_1", spans: [], quoteMatched: false, verifierYes: false, met: false }]);
+  });
+
   it("a step with no rubric points always passes without any AI call", async () => {
     const fetchSpy = vi.fn();
     vi.stubGlobal("fetch", fetchSpy);

@@ -5,7 +5,7 @@
 
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { z } from "zod";
-import { generate } from "./index";
+import { generate, getAiCallLogs } from "./index";
 
 const schema = z.object({ ok: z.boolean() });
 
@@ -61,5 +61,31 @@ describe("generate — retry and failure handling", () => {
 
     const result = await generate("grader", {}, schema);
     expect(result.ok).toBe(false);
+  });
+
+  it("reports a timeout-specific message when the call is aborted", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => {
+        const err = new Error("aborted");
+        err.name = "AbortError";
+        throw err;
+      }),
+    );
+    const result = await generate("grader", {}, schema);
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error.message).toContain("timed out");
+  });
+});
+
+describe("getAiCallLogs", () => {
+  it("returns the accumulated call log array", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => ({ ok: true, json: async () => ({ ok: true }) })),
+    );
+    await generate("grader", {}, schema);
+    expect(Array.isArray(getAiCallLogs())).toBe(true);
+    expect(getAiCallLogs().length).toBeGreaterThan(0);
   });
 });

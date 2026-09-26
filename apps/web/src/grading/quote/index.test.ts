@@ -2,7 +2,11 @@
 // target >=95% lines / >=90% branches per docs/BACKEND1.md testing table).
 
 import { describe, expect, it } from "vitest";
-import { matchQuote, normalise } from "./index";
+import { matchQuote, normalise, tokenize } from "./index";
+
+// Minimal ambient shape for Node's `process`, available at runtime under
+// Vitest but not typed by this tsconfig's browser-only `types` list.
+declare const process: { env?: Record<string, string | undefined> } | undefined;
 
 describe("normalise", () => {
   it("lowercases, strips punctuation, and collapses whitespace", () => {
@@ -19,6 +23,16 @@ describe("normalise", () => {
     // Curly quotes/dashes become spaces (punctuation), same as their ASCII
     // counterparts — the point is that both forms normalise identically.
     expect(normalise("“level–by—level”")).toBe(normalise('"level-by-level"'));
+  });
+});
+
+describe("tokenize", () => {
+  it("returns an empty array for an empty string", () => {
+    expect(tokenize("")).toEqual([]);
+  });
+
+  it("splits on single spaces", () => {
+    expect(tokenize("bfs visits nodes")).toEqual(["bfs", "visits", "nodes"]);
   });
 });
 
@@ -146,6 +160,15 @@ describe("matchQuote — performance budget", () => {
       best = Math.min(best, performance.now() - start);
     }
 
-    expect(best).toBeLessThanOrEqual(5);
+    // V8 coverage instrumentation (npm run coverage) adds real per-call
+    // overhead unrelated to the algorithm itself; the budget only binds on
+    // an uninstrumented run (npm test), which is what the hard 5ms number
+    // in docs/BACKEND1.md's performance table is measured against. `process`
+    // isn't typed under this tsconfig (browser-only `types`), so it's read
+    // through a minimal local ambient declaration rather than pulling in
+    // @types/node project-wide.
+    const npmScript = typeof process === "undefined" ? undefined : process.env?.npm_lifecycle_event;
+    const budgetMs = npmScript === "coverage" ? 25 : 5;
+    expect(best).toBeLessThanOrEqual(budgetMs);
   });
 });
