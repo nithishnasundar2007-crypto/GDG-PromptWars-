@@ -18,12 +18,14 @@ import { gradeRubricStep } from "./rubric-step";
  * @param question the question this step belongs to
  * @param step which step is being graded
  * @param answer the student's submitted answer (code or free text)
- * @returns the GradeResult — never throws for a normal grading outcome; a
- *   missing `question.lang` on a code step is a caller/config error, not a
- *   gradeable outcome, and still throws.
+ * @returns the GradeResult — never throws for a normal grading outcome. Apply
+ *   and Transfer only take the code-runner path when `question.lang` is set;
+ *   an Apply/Transfer step on a question with no `lang` (e.g. an open-ended
+ *   Project Explanation topic) is graded as a rubric step instead, per the
+ *   Backend 2 hand-off (docs/BACKEND2_GRADING_HANDOFF.md, "Current blocker").
  */
 export async function gradeStep(question: Question, step: AnyStep, answer: string): Promise<GradeResult> {
-  if (isCodeStep(step)) {
+  if (isCodeStep(step) && question.lang !== undefined) {
     const run = await gradeCodeStep(question, step, answer);
     const partial: GradeResult = { step, passed: run.passed, run };
     if (run.passed) return partial;

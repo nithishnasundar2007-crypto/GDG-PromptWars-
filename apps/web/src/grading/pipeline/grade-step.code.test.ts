@@ -55,6 +55,34 @@ describe("gradeStep — code step", () => {
   });
 });
 
+describe("gradeStep — Apply/Transfer on a question with no lang (e.g. Project Explanation)", () => {
+  it("grades as a rubric step instead of throwing (docs/BACKEND2_GRADING_HANDOFF.md blocker)", async () => {
+    const openEndedQuestion: Question = {
+      ...question,
+      lang: undefined,
+      tests: undefined,
+      rubrics: { apply: [{ id: "p1", text: "Names a specific bottleneck", required: true }] },
+    };
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (url: string) => {
+        if (url.endsWith("/v1/grade")) {
+          return { ok: true, json: async () => ({ points: [{ pointId: "p1", spans: ["the database is the bottleneck"] }] }) };
+        }
+        if (url.endsWith("/v1/verify")) {
+          return { ok: true, json: async () => ({ pointId: "p1", satisfied: true, reason: "specific" }) };
+        }
+        throw new Error(`unexpected fetch ${url}`);
+      }),
+    );
+
+    const grade = await gradeStep(openEndedQuestion, "apply", "the database is the bottleneck at scale");
+    expect(grade.run).toBeUndefined();
+    expect(grade.rubric?.[0]?.met).toBe(true);
+    expect(grade.passed).toBe(true);
+  });
+});
+
 describe("gradeStep — rubric step failure path attaches feedback", () => {
   it("calls explain (and returns its fallback) when a rubric step fails", async () => {
     const rubricQuestion: Question = { ...question, rubrics: { recognize: [{ id: "p1", text: "Names BFS", required: true }] } };

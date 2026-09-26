@@ -64,9 +64,9 @@ describe("demo path 2 — an Explain-step pass shows quoted evidence", () => {
   it("gradeStep returns matched spans as evidence when the step passes", async () => {
     mockAiProxy((body) => {
       if (body.promptId === "grader") {
-        return { points: [{ pointId: "rp_2", spans: ["BFS explores level by level, so the first time it reaches the target is via the fewest edges"] }] };
+        return { points: [{ pointId: "bfs_e1", spans: ["BFS explores level by level, so the first time it reaches the target is via the fewest edges"] }] };
       }
-      if (body.promptId === "verifier") return { pointId: "rp_2", satisfied: true, reason: "clearly explained" };
+      if (body.promptId === "verifier") return { pointId: "bfs_e1", satisfied: true, reason: "clearly explained" };
       throw new Error(`unexpected promptId ${body.promptId}`);
     });
 
