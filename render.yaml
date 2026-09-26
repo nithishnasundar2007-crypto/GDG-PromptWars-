@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: ai-proxy
+    runtime: node
+    plan: free
+    region: oregon
+    rootDir: apps/ai-proxy
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start
+    healthCheckPath: /v1/health
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-2.0-flash
+      - key: ALLOWED_ORIGIN
+        sync: false
+      - key: PORT
+        value: 10000
+      - key: RATE_LIMIT_PER_MIN
+        value: 60
+      - key: APP_CHECK_DEV_BYPASS
+        value: false
+      - key: FIREBASE_PROJECT_ID
+        sync: false
