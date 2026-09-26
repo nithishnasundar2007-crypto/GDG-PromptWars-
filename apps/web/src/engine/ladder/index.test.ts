@@ -1,6 +1,18 @@
 import { describe, expect, it } from "vitest";
 import type { GradeResult, LadderState } from "../../contracts";
-import { nextStep } from "./index";
+import {
+  HR_TRANSITIONS,
+  TECHNICAL_TRANSITIONS,
+  applyStepResult,
+  attemptWasAssisted,
+  columnOf,
+  firstStepFor,
+  newLadder,
+  nextStep,
+  promptForStep,
+  stepsFor,
+} from "./index";
+import { getQuestion } from "../content";
 
 function ladder(overrides: Partial<LadderState> = {}): LadderState {
   return {
@@ -118,5 +130,85 @@ describe("HR track transitions (PRD 3.1)", () => {
     const r = nextStep(ladder({ track: "hr" }), grade("followup", true));
     expect(r.next).toBe("done");
     expect(r.gap).toBeUndefined();
+  });
+});
+
+describe("transition table coverage (PRD 3.1)", () => {
+  it("every technical row is exercised on both pass and fail", () => {
+    for (const step of Object.keys(TECHNICAL_TRANSITIONS) as (keyof typeof TECHNICAL_TRANSITIONS)[]) {
+      const row = TECHNICAL_TRANSITIONS[step];
+      expect(nextStep(ladder(), grade(step, true)).next).toBe(row.onPass);
+      expect(nextStep(ladder(), grade(step, false)).next).toBe(row.onFail);
+    }
+    expect(Object.keys(TECHNICAL_TRANSITIONS)).toEqual(["recognize", "hint", "apply", "explain", "transfer"]);
+  });
+
+  it("every HR row is exercised on both pass and fail", () => {
+    for (const step of Object.keys(HR_TRANSITIONS) as (keyof typeof HR_TRANSITIONS)[]) {
+      const row = HR_TRANSITIONS[step];
+      expect(nextStep(ladder({ track: "hr" }), grade(step, true)).next).toBe(row.onPass);
+      expect(nextStep(ladder({ track: "hr" }), grade(step, false)).next).toBe(row.onFail);
+    }
+  });
+
+  it("the only way to reach transfer is an explain pass, and the only way to reach hint is a recognize fail", () => {
+    const reachable = new Set<string>();
+    for (const [step, row] of Object.entries(TECHNICAL_TRANSITIONS)) {
+      if (row.onPass === "transfer") reachable.add(step + ":pass");
+      if (row.onFail === "transfer") reachable.add(step + ":fail");
+      if (row.onPass === "hint") reachable.add(step + ":pass");
+      if (row.onFail === "hint") reachable.add(step + ":fail");
+    }
+    expect([...reachable].sort()).toEqual(["explain:pass", "recognize:fail"]);
+  });
+});
+
+describe("ladder construction and bookkeeping", () => {
+  it("starts on the first step of the track, or on the requested step", () => {
+    expect(firstStepFor("technical")).toBe("recognize");
+    expect(firstStepFor("hr")).toBe("structure");
+    const base = { id: "ld_1", studentId: "st_1", questionId: "q_x", track: "technical" as const, startedAt: "t" };
+    expect(newLadder(base).current).toBe("recognize");
+    expect(newLadder({ ...base, startStep: "apply" }).current).toBe("apply");
+    expect(newLadder(base)).toMatchObject({ assisted: false, outcomes: {} });
+  });
+
+  it("steps per track", () => {
+    expect(stepsFor("technical")).toEqual(["recognize", "hint", "apply", "explain", "transfer"]);
+    expect(stepsFor("hr")).toEqual(["structure", "specifics", "followup"]);
+    expect(columnOf("hint")).toBe("recognize");
+    expect(columnOf("apply")).toBe("apply");
+  });
+
+  it("a hint pass is recorded as assisted; the approach is revealed only after a hint fail", () => {
+    const l = ladder();
+    expect(attemptWasAssisted(l, "hint")).toBe(true);
+    expect(attemptWasAssisted(l, "apply")).toBe(false);
+    const afterFail = applyStepResult(l, { step: "hint", passed: false, timeMs: 5, attemptId: "att_1" }, nextStep(l, grade("hint", false)));
+    expect(afterFail.assisted).toBe(true);
+    expect(afterFail.current).toBe("apply");
+    expect(attemptWasAssisted(afterFail, "apply")).toBe(true);
+    const afterPass = applyStepResult(l, { step: "hint", passed: true, timeMs: 5, attemptId: "att_1" }, nextStep(l, grade("hint", true)));
+    expect(afterPass.assisted).toBe(false);
+  });
+
+  it("applyStepResult records the outcome without mutating the input ladder", () => {
+    const l = ladder();
+    const next = applyStepResult(l, { step: "recognize", passed: true, timeMs: 1234, attemptId: "att_9" }, nextStep(l, grade("recognize", true)));
+    expect(next.current).toBe("apply");
+    expect(next.outcomes.recognize).toEqual({ passed: true, assisted: false, timeMs: 1234, attemptId: "att_9" });
+    expect(l.outcomes).toEqual({});
+    expect(l.current).toBe("recognize");
+  });
+
+  it("picks the prompt shown for the step the ladder moves to", () => {
+    const q = getQuestion("q_bfs_probe")!;
+    expect(promptForStep(q, "hint")).toBe(q.hint);
+    expect(promptForStep(q, "explain")).toBe(q.followUp);
+    expect(promptForStep(q, "transfer")).toBe(q.variant!.prompt);
+    expect(promptForStep(q, "done")).toBeUndefined();
+    const hr = getQuestion("q_hr_conflict_probe")!;
+    expect(promptForStep(hr, "followup")).toBe(hr.followUp);
+    expect(promptForStep(hr, "specifics")).toContain("concrete");
   });
 });

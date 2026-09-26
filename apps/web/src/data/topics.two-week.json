@@ -1,0 +1,10 @@
+[
+  { "id": "tp_arrays_strings", "name": "Arrays & Strings", "track": "technical", "area": "dsa" },
+  { "id": "tp_trees", "name": "Trees", "track": "technical", "area": "dsa" },
+  { "id": "tp_dp", "name": "Dynamic Programming", "track": "technical", "area": "dsa" },
+  { "id": "tp_normalization", "name": "Normalization", "track": "technical", "area": "dbms" },
+  { "id": "tp_transactions", "name": "Transactions & ACID", "track": "technical", "area": "dbms" },
+  { "id": "tp_os_processes", "name": "Processes & Threads", "track": "technical", "area": "os" },
+  { "id": "tp_os_deadlocks", "name": "Deadlocks", "track": "technical", "area": "os" },
+  { "id": "tp_oop", "name": "OOP Principles", "track": "technical", "area": "oop" }
+]

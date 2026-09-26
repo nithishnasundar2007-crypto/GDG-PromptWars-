@@ -1,0 +1,15 @@
+{
+  "q_bfs_probe": "Use BFS: put the start node in a queue with distance 0, mark it visited, and repeatedly take a node from the front, adding each unvisited neighbour with distance + 1. The first time you reach the target, that distance is the fewest edges. If the queue empties first, return -1.",
+  "q_bfs_grid_confirm": "Treat each open cell as a node and its up/down/left/right open cells as neighbours, then run BFS from the start cell counting moves. The first time you reach the goal cell is the minimum. Mark cells visited when you enqueue them.",
+  "q_bfs_hops_retest": "Run BFS from the start and record each node's distance in a dict the first time you discover it: a neighbour's distance is its parent's distance + 1. The dict doubles as the visited set, which also stops cycles.",
+  "q_bfs_broadcast_retest": "Run BFS from the source and track each node's distance. The number of rounds is the largest distance found. If fewer nodes were reached than exist in the graph, return -1.",
+  "q_sql_left_join_probe": "Use students LEFT JOIN enrollments LEFT JOIN courses so that every student stays in the result. Students with no enrollment get NULL for the course title. Order by name, then title.",
+  "q_sql_anti_join_confirm": "LEFT JOIN enrollments onto students, then filter WHERE enrollments.student_id IS NULL. Only students with no matching enrollment have NULL there. (NOT EXISTS is an equivalent alternative.)",
+  "q_sql_dept_counts_retest": "Use departments LEFT JOIN employees ON employees.dept_id = departments.id, GROUP BY department, and COUNT(employees.id). COUNT of a column skips NULLs, so empty departments give 0.",
+  "q_project_overview_probe": "Cover four parts in order: the problem and who it is for, your own role, the main components, and how data flows between them. Then name one design choice and why you made it.",
+  "q_project_decision_confirm": "Name one specific decision, one real alternative you did not pick, and one concrete downside of your choice. Tie it to a real constraint such as time, team skill or data shape.",
+  "q_project_scaling_retest": "Pick the most likely bottleneck in your own project, say how you would detect it (logs, metrics, load test), then describe one concrete fix and what it costs.",
+  "q_hr_conflict_probe": "Use Situation, Action, Result: set the scene in one or two sentences, describe what you did (using I), and finish with the outcome, ideally with a number.",
+  "q_hr_deadline_confirm": "Use Situation, Action, Result: state the deadline and stakes, what you did step by step, and what was delivered.",
+  "q_hr_learning_retest": "Use Situation, Action, Result: what you had to learn and why, how you went about learning it, and what it let you do."
+}

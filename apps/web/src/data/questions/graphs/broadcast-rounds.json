@@ -1,0 +1,39 @@
+{
+  "id": "q_bfs_broadcast_retest",
+  "topicId": "tp_graphs",
+  "track": "technical",
+  "role": "retest",
+  "prompt": "A message starts at one node of an undirected network (adjacency dict). Each round, every node holding the message passes it to all of its neighbours. Return the number of rounds until every node has it, or -1 if some node can never receive it.",
+  "lang": "python",
+  "starterCode": "def broadcast_rounds(graph, source):\n    pass\n",
+  "hint": "Each round is one level of a traversal. What does the last level you reach tell you?",
+  "rubrics": {
+    "recognize": [
+      { "id": "bc_r1", "text": "Names BFS as the approach", "required": true },
+      { "id": "bc_r2", "text": "Says one round corresponds to one BFS level", "required": true }
+    ],
+    "hint": [
+      { "id": "bc_h1", "text": "Names BFS as the approach", "required": true }
+    ],
+    "explain": [
+      { "id": "bc_e1", "text": "Explains the answer is the largest BFS distance from the source", "required": true },
+      { "id": "bc_e2", "text": "Explains that if not every node was reached the answer is -1", "required": true }
+    ]
+  },
+  "tests": [
+    { "id": "t1", "input": "[{\"A\":[\"B\"],\"B\":[\"A\",\"C\"],\"C\":[\"B\"]},\"A\"]", "expected": "2", "hidden": false },
+    { "id": "t2", "input": "[{\"A\":[\"B\",\"C\"],\"B\":[\"A\"],\"C\":[\"A\",\"D\"],\"D\":[\"C\"]},\"A\"]", "expected": "2", "hidden": true },
+    { "id": "t3", "input": "[{\"A\":[\"B\"],\"B\":[\"A\"],\"C\":[]},\"A\"]", "expected": "-1", "hidden": true },
+    { "id": "t4", "input": "[{\"A\":[]},\"A\"]", "expected": "0", "hidden": true }
+  ],
+  "variant": {
+    "prompt": "Twist: two nodes start with the message at the same time. Return the rounds until every node has it.",
+    "starterCode": "def broadcast_rounds_two(graph, source_a, source_b):\n    pass\n",
+    "tests": [
+      { "id": "t5", "input": "[{\"A\":[\"B\"],\"B\":[\"A\",\"C\"],\"C\":[\"B\",\"D\"],\"D\":[\"C\"]},\"A\",\"D\"]", "expected": "1", "hidden": true },
+      { "id": "t6", "input": "[{\"A\":[\"B\"],\"B\":[\"A\",\"C\"],\"C\":[\"B\",\"D\"],\"D\":[\"C\",\"E\"],\"E\":[\"D\"]},\"A\",\"E\"]", "expected": "2", "hidden": true }
+    ]
+  },
+  "targetTimeMs": { "recognize": 60000, "hint": 45000, "apply": 300000, "explain": 90000, "transfer": 240000 },
+  "followUp": "Explain why the number of rounds equals the largest BFS distance, and when the answer is -1."
+}

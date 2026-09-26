@@ -1,0 +1,14 @@
+{
+  "tp_graphs": ["graph", "bfs", "dfs", "breadth first", "depth first", "shortest path", "adjacency", "traversal", "dijkstra", "topological"],
+  "tp_sql_joins": ["join", "left join", "inner join", "outer join", "sql query", "foreign key", "group by", "self join"],
+  "tp_project": ["project", "architecture", "your role", "tech stack", "database choice", "design decision"],
+  "tp_hr_communication": ["tell me about", "conflict", "deadline", "teamwork", "strength", "weakness", "why should we hire", "leadership", "failure"],
+  "tp_arrays_strings": ["array", "string", "substring", "palindrome", "anagram", "two pointer", "sliding window"],
+  "tp_trees": ["tree", "binary tree", "bst", "inorder", "preorder", "postorder", "lca", "height of"],
+  "tp_dp": ["dynamic programming", "memoization", "knapsack", "subsequence", "fibonacci", "coin change"],
+  "tp_normalization": ["normalization", "normal form", "1nf", "2nf", "3nf", "bcnf", "functional dependency"],
+  "tp_transactions": ["transaction", "acid", "isolation level", "commit", "rollback", "dirty read"],
+  "tp_os_processes": ["process", "thread", "context switch", "scheduling", "ipc", "semaphore", "mutex"],
+  "tp_os_deadlocks": ["deadlock", "banker", "resource allocation", "starvation", "circular wait"],
+  "tp_oop": ["oop", "polymorphism", "inheritance", "encapsulation", "abstraction", "interface", "overloading", "overriding"]
+}

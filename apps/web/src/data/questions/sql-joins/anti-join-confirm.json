@@ -1,0 +1,89 @@
+{
+  "id": "q_sql_anti_join_confirm",
+  "topicId": "tp_sql_joins",
+  "track": "technical",
+  "role": "confirm",
+  "prompt": "Same tables: students(id, name), courses(id, title), enrollments(student_id, course_id). Return the names of students who are not enrolled in any course, ordered by name.",
+  "lang": "sql",
+  "starterCode": "SELECT ...\nFROM students\n",
+  "hint": "Keep every student, join their enrollments, then keep only the rows where the join found nothing.",
+  "rubrics": {
+    "recognize": [
+      {
+        "id": "sqla_r1",
+        "text": "Names a LEFT JOIN with an IS NULL filter on the right table (or NOT EXISTS) as the approach",
+        "required": true
+      },
+      {
+        "id": "sqla_r2",
+        "text": "Says the goal is rows with no match on the right side",
+        "required": true
+      }
+    ],
+    "hint": [
+      {
+        "id": "sqla_h1",
+        "text": "Names a LEFT JOIN with an IS NULL filter on the right table (or NOT EXISTS) as the approach",
+        "required": true
+      }
+    ],
+    "explain": [
+      {
+        "id": "sqla_e1",
+        "text": "Explains that unmatched rows have NULL in the right table's key, which is what the WHERE clause tests",
+        "required": true
+      },
+      {
+        "id": "sqla_e2",
+        "text": "Explains why the NULL test must go in WHERE after the join, not in the ON clause",
+        "required": false
+      }
+    ]
+  },
+  "tests": [
+    {
+      "id": "t1",
+      "input": "CREATE TABLE students(id INTEGER, name TEXT); CREATE TABLE courses(id INTEGER, title TEXT); CREATE TABLE enrollments(student_id INTEGER, course_id INTEGER); INSERT INTO students VALUES (1,'Asha'),(2,'Ravi'); INSERT INTO courses VALUES (10,'Math'); INSERT INTO enrollments VALUES (1,10);",
+      "expected": "[[\"Ravi\"]]",
+      "hidden": false
+    },
+    {
+      "id": "t2",
+      "input": "CREATE TABLE students(id INTEGER, name TEXT); CREATE TABLE courses(id INTEGER, title TEXT); CREATE TABLE enrollments(student_id INTEGER, course_id INTEGER); INSERT INTO students VALUES (1,'Asha'),(2,'Ravi'),(3,'Meena'); INSERT INTO courses VALUES (10,'Math'),(20,'Physics'); INSERT INTO enrollments VALUES (1,10),(1,20);",
+      "expected": "[[\"Meena\"],[\"Ravi\"]]",
+      "hidden": true
+    },
+    {
+      "id": "t3",
+      "input": "CREATE TABLE students(id INTEGER, name TEXT); CREATE TABLE courses(id INTEGER, title TEXT); CREATE TABLE enrollments(student_id INTEGER, course_id INTEGER); INSERT INTO students VALUES (1,'Asha'); INSERT INTO courses VALUES (10,'Math'); INSERT INTO enrollments VALUES (1,10);",
+      "expected": "[]",
+      "hidden": true
+    }
+  ],
+  "variant": {
+    "prompt": "Twist: flip it. Return the titles of courses that no student is enrolled in, ordered by title.",
+    "starterCode": "SELECT ...\nFROM courses\n",
+    "tests": [
+      {
+        "id": "t4",
+        "input": "CREATE TABLE students(id INTEGER, name TEXT); CREATE TABLE courses(id INTEGER, title TEXT); CREATE TABLE enrollments(student_id INTEGER, course_id INTEGER); INSERT INTO students VALUES (1,'Asha'),(2,'Ravi'); INSERT INTO courses VALUES (10,'Math'),(20,'Physics'),(30,'Chem'); INSERT INTO enrollments VALUES (1,10),(2,20);",
+        "expected": "[[\"Chem\"]]",
+        "hidden": true
+      },
+      {
+        "id": "t5",
+        "input": "CREATE TABLE students(id INTEGER, name TEXT); CREATE TABLE courses(id INTEGER, title TEXT); CREATE TABLE enrollments(student_id INTEGER, course_id INTEGER); INSERT INTO students VALUES (1,'Asha'); INSERT INTO courses VALUES (10,'Math'); INSERT INTO enrollments VALUES (1,10);",
+        "expected": "[]",
+        "hidden": true
+      }
+    ]
+  },
+  "targetTimeMs": {
+    "recognize": 45000,
+    "hint": 30000,
+    "apply": 240000,
+    "explain": 75000,
+    "transfer": 240000
+  },
+  "followUp": "Explain why the IS NULL check identifies students with no enrollment, and why it belongs in WHERE rather than ON."
+}

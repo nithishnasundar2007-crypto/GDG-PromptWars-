@@ -1,0 +1,89 @@
+{
+  "id": "q_sql_dept_counts_retest",
+  "topicId": "tp_sql_joins",
+  "track": "technical",
+  "role": "retest",
+  "prompt": "Tables: departments(id, name), employees(id, name, dept_id). Return every department's name and its number of employees, including departments with none (count 0). Columns: name, employee_count. Order by name.",
+  "lang": "sql",
+  "starterCode": "SELECT ...\nFROM departments\n",
+  "hint": "Which side of the join must be preserved so empty departments still appear? And what should COUNT count?",
+  "rubrics": {
+    "recognize": [
+      {
+        "id": "sqld_r1",
+        "text": "Names LEFT JOIN from departments to employees",
+        "required": true
+      },
+      {
+        "id": "sqld_r2",
+        "text": "Says departments must be the preserved side so empty departments still appear",
+        "required": true
+      }
+    ],
+    "hint": [
+      {
+        "id": "sqld_h1",
+        "text": "Names LEFT JOIN from departments to employees",
+        "required": true
+      }
+    ],
+    "explain": [
+      {
+        "id": "sqld_e1",
+        "text": "Explains that COUNT of an employee column skips NULLs, giving 0 for empty departments",
+        "required": true
+      },
+      {
+        "id": "sqld_e2",
+        "text": "Explains that COUNT(*) would count the NULL-extended row as 1",
+        "required": false
+      }
+    ]
+  },
+  "tests": [
+    {
+      "id": "t1",
+      "input": "CREATE TABLE departments(id INTEGER, name TEXT); CREATE TABLE employees(id INTEGER, name TEXT, dept_id INTEGER); INSERT INTO departments VALUES (1,'Eng'),(2,'HR'); INSERT INTO employees VALUES (1,'Sam',1);",
+      "expected": "[[\"Eng\",1],[\"HR\",0]]",
+      "hidden": false
+    },
+    {
+      "id": "t2",
+      "input": "CREATE TABLE departments(id INTEGER, name TEXT); CREATE TABLE employees(id INTEGER, name TEXT, dept_id INTEGER); INSERT INTO departments VALUES (1,'Eng'),(2,'HR'),(3,'Ops'); INSERT INTO employees VALUES (1,'Sam',1),(2,'Lee',1),(3,'Ann',3);",
+      "expected": "[[\"Eng\",2],[\"HR\",0],[\"Ops\",1]]",
+      "hidden": true
+    },
+    {
+      "id": "t3",
+      "input": "CREATE TABLE departments(id INTEGER, name TEXT); CREATE TABLE employees(id INTEGER, name TEXT, dept_id INTEGER); INSERT INTO departments VALUES (1,'Eng'),(2,'HR'); INSERT INTO employees VALUES (1,'Sam',1),(2,'Ivy',NULL);",
+      "expected": "[[\"Eng\",1],[\"HR\",0]]",
+      "hidden": true
+    }
+  ],
+  "variant": {
+    "prompt": "Twist: now list every EMPLOYEE with their department name; employees with no department show NULL. Columns: name, department. Order by employee name.",
+    "starterCode": "SELECT ...\nFROM employees\n",
+    "tests": [
+      {
+        "id": "t4",
+        "input": "CREATE TABLE departments(id INTEGER, name TEXT); CREATE TABLE employees(id INTEGER, name TEXT, dept_id INTEGER); INSERT INTO departments VALUES (1,'Eng'); INSERT INTO employees VALUES (1,'Sam',1),(2,'Ivy',NULL);",
+        "expected": "[[\"Ivy\",null],[\"Sam\",\"Eng\"]]",
+        "hidden": true
+      },
+      {
+        "id": "t5",
+        "input": "CREATE TABLE departments(id INTEGER, name TEXT); CREATE TABLE employees(id INTEGER, name TEXT, dept_id INTEGER); INSERT INTO departments VALUES (1,'Eng'),(2,'HR'); INSERT INTO employees VALUES (1,'Sam',1);",
+        "expected": "[[\"Sam\",\"Eng\"]]",
+        "hidden": true
+      }
+    ]
+  },
+  "targetTimeMs": {
+    "recognize": 45000,
+    "hint": 30000,
+    "apply": 240000,
+    "explain": 75000,
+    "transfer": 240000
+  },
+  "followUp": "Explain why departments with no employees show 0 rather than 1 in your query."
+}

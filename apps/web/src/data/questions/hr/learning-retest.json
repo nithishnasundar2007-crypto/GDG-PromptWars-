@@ -1,0 +1,26 @@
+{
+  "id": "q_hr_learning_retest",
+  "topicId": "tp_hr_communication",
+  "track": "hr",
+  "role": "retest",
+  "prompt": "Tell me about a time you had to learn something new quickly to get a task done.",
+  "hint": "Use Situation, Action, Result: what did you need to learn, how did you learn it, and what did it let you do?",
+  "rubrics": {
+    "structure": [
+      { "id": "hrl_s1", "text": "Describes the situation and what needed to be learned", "required": true },
+      { "id": "hrl_s2", "text": "Describes how the student went about learning it", "required": true },
+      { "id": "hrl_s3", "text": "Describes the result", "required": true }
+    ],
+    "specifics": [
+      { "id": "hrl_p1", "text": "Gives a concrete, real example rather than a general statement", "required": true },
+      { "id": "hrl_p2", "text": "States what the student personally did", "required": true },
+      { "id": "hrl_p3", "text": "Includes a number, duration or measurable outcome", "required": false }
+    ],
+    "followup": [
+      { "id": "hrl_f1", "text": "Answers the follow-up consistently with the original story", "required": true },
+      { "id": "hrl_f2", "text": "Names how they would approach learning the next new thing", "required": true }
+    ]
+  },
+  "targetTimeMs": { "structure": 120000, "specifics": 90000, "followup": 90000 },
+  "followUp": "How did you know you had learned it well enough, and how would you approach it next time?"
+}

@@ -1,0 +1,39 @@
+{
+  "id": "q_bfs_hops_retest",
+  "topicId": "tp_graphs",
+  "track": "technical",
+  "role": "retest",
+  "prompt": "Given an unweighted directed graph (adjacency dict) and a start node, return a dict mapping every reachable node to its minimum number of hops from start (start itself is 0). Unreachable nodes are left out.",
+  "lang": "python",
+  "starterCode": "def hop_counts(graph, start):\n    pass\n",
+  "hint": "You need the distance to every node, not one target. Which traversal reaches nodes in order of distance from the start?",
+  "rubrics": {
+    "recognize": [
+      { "id": "hop_r1", "text": "Names BFS as the approach", "required": true },
+      { "id": "hop_r2", "text": "Says distance grows by one for each level of the traversal", "required": true }
+    ],
+    "hint": [
+      { "id": "hop_h1", "text": "Names BFS as the approach", "required": true }
+    ],
+    "explain": [
+      { "id": "hop_e1", "text": "Explains that a node's distance is its parent's distance plus one, set the first time it is discovered", "required": true },
+      { "id": "hop_e2", "text": "Explains that a visited/distance map stops cycles from looping forever", "required": false }
+    ]
+  },
+  "tests": [
+    { "id": "t1", "input": "[{\"A\":[\"B\",\"C\"],\"B\":[\"D\"],\"C\":[\"D\"],\"D\":[]},\"A\"]", "expected": "{\"A\":0,\"B\":1,\"C\":1,\"D\":2}", "hidden": false },
+    { "id": "t2", "input": "[{\"A\":[\"B\"],\"B\":[\"C\"],\"C\":[\"A\"]},\"A\"]", "expected": "{\"A\":0,\"B\":1,\"C\":2}", "hidden": true },
+    { "id": "t3", "input": "[{\"A\":[\"B\"],\"B\":[],\"X\":[\"A\"]},\"A\"]", "expected": "{\"A\":0,\"B\":1}", "hidden": true },
+    { "id": "t4", "input": "[{\"A\":[]},\"A\"]", "expected": "{\"A\":0}", "hidden": true }
+  ],
+  "variant": {
+    "prompt": "Twist: instead of every distance, return the sorted list of nodes that are exactly k hops from start.",
+    "starterCode": "def nodes_at_distance(graph, start, k):\n    pass\n",
+    "tests": [
+      { "id": "t5", "input": "[{\"A\":[\"B\",\"C\"],\"B\":[\"D\"],\"C\":[\"D\"],\"D\":[]},\"A\",1]", "expected": "[\"B\",\"C\"]", "hidden": true },
+      { "id": "t6", "input": "[{\"A\":[\"B\",\"C\"],\"B\":[\"D\"],\"C\":[\"D\"],\"D\":[]},\"A\",2]", "expected": "[\"D\"]", "hidden": true }
+    ]
+  },
+  "targetTimeMs": { "recognize": 60000, "hint": 45000, "apply": 300000, "explain": 90000, "transfer": 240000 },
+  "followUp": "Explain how your code makes sure each node's distance is the smallest one, and what stops it looping on a cycle."
+}

@@ -1,0 +1,39 @@
+{
+  "id": "q_bfs_grid_confirm",
+  "topicId": "tp_graphs",
+  "track": "technical",
+  "role": "confirm",
+  "prompt": "A maze is a list of equal-length strings: '.' is open, '#' is a wall. From start (row, col) to goal (row, col) you may move up, down, left or right. Return the minimum number of moves, or -1 if the goal cannot be reached.",
+  "lang": "python",
+  "starterCode": "def min_steps(grid, start, goal):\n    pass\n",
+  "hint": "Treat each open cell as a node and its open neighbours as edges. Which traversal finds the fewest moves?",
+  "rubrics": {
+    "recognize": [
+      { "id": "grid_r1", "text": "Names BFS as the approach for the fewest moves", "required": true },
+      { "id": "grid_r2", "text": "Treats grid cells as nodes with up/down/left/right neighbours", "required": true }
+    ],
+    "hint": [
+      { "id": "grid_h1", "text": "Names BFS as the approach for the fewest moves", "required": true }
+    ],
+    "explain": [
+      { "id": "grid_e1", "text": "Explains that BFS explores cells in increasing distance, so the first arrival at the goal is the minimum", "required": true },
+      { "id": "grid_e2", "text": "Explains marking cells visited when enqueued so none is queued twice", "required": false }
+    ]
+  },
+  "tests": [
+    { "id": "t1", "input": "[[\"..\",\"..\"],[0,0],[1,1]]", "expected": "2", "hidden": false },
+    { "id": "t2", "input": "[[\"....\",\".##.\",\"....\"],[0,0],[2,3]]", "expected": "5", "hidden": true },
+    { "id": "t3", "input": "[[\"..#\",\"###\",\"...\"],[0,0],[2,2]]", "expected": "-1", "hidden": true },
+    { "id": "t4", "input": "[[\"..\",\"..\"],[1,0],[1,0]]", "expected": "0", "hidden": true }
+  ],
+  "variant": {
+    "prompt": "Twist: diagonal moves are now allowed too (8 directions). Return the minimum number of moves.",
+    "starterCode": "def min_steps_diagonal(grid, start, goal):\n    pass\n",
+    "tests": [
+      { "id": "t5", "input": "[[\"....\",\".##.\",\"....\"],[0,0],[2,3]]", "expected": "4", "hidden": true },
+      { "id": "t6", "input": "[[\"...\",\"...\",\"...\"],[0,0],[2,2]]", "expected": "2", "hidden": true }
+    ]
+  },
+  "targetTimeMs": { "recognize": 60000, "hint": 45000, "apply": 360000, "explain": 90000, "transfer": 240000 },
+  "followUp": "Explain why BFS returns the minimum number of moves here, and why you mark a cell visited when you enqueue it rather than when you dequeue it."
+}
