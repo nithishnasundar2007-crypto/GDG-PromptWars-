@@ -21,12 +21,21 @@ const question: Question = {
 
 type FetchBody = { promptId: string; input: unknown };
 
+const ROUTE_TO_PROMPT_ID: Record<string, string> = {
+  "/v1/grade": "grader",
+  "/v1/verify": "verifier",
+  "/v1/explain": "explainer",
+  "/v1/project-questions": "project-question-generator",
+};
+
 function mockAiProxy(handler: (body: FetchBody) => unknown): void {
   vi.stubGlobal(
     "fetch",
-    vi.fn(async (_url: string, init: RequestInit) => {
-      const body = JSON.parse(init.body as string) as FetchBody;
-      return { ok: true, json: async () => handler(body) };
+    vi.fn(async (url: string, init: RequestInit) => {
+      const route = Object.keys(ROUTE_TO_PROMPT_ID).find((r) => url.endsWith(r));
+      const promptId = route ? ROUTE_TO_PROMPT_ID[route]! : "unknown";
+      const input: unknown = JSON.parse(init.body as string);
+      return { ok: true, json: async () => handler({ promptId, input }) };
     }),
   );
 }

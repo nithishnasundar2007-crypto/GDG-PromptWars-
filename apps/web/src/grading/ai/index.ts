@@ -36,14 +36,25 @@ function retryDelayMs(): number {
   return AI_RETRY_BASE_DELAY_MS + Math.random() * AI_RETRY_JITTER_MS;
 }
 
+// Maps each client-side PromptId to its fixed /v1/* route (API Contract
+// §7.5 / hard rule §3.2 — "fixed /v1/* operations only, never an open
+// relay"). The request body IS the prompt's input, not a wrapper envelope —
+// the proxy's own zod schemas (apps/ai-proxy/src/schemas.ts) validate it.
+const PROMPT_ROUTES: Record<PromptId, string> = {
+  grader: "/v1/grade",
+  verifier: "/v1/verify",
+  explainer: "/v1/explain",
+  "project-question-generator": "/v1/project-questions",
+};
+
 async function callAiProxy(promptId: PromptId, input: unknown): Promise<unknown> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), AI_TIMEOUT_MS);
   try {
-    const response = await fetch(`${config.aiProxyUrl}/api/generate`, {
+    const response = await fetch(`${config.aiProxyUrl}${PROMPT_ROUTES[promptId]}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ promptId, input }),
+      body: JSON.stringify(input),
       signal: controller.signal,
     });
     if (!response.ok) {
