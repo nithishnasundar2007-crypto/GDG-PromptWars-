@@ -11,3 +11,5 @@ export { generateProjectQuestions, gradeProjectAnswer } from "./project";
 export { transcribe } from "./transcribe";
 export { AIService, getAiCallLogs } from "./ai";
 export { PROMPT_REGISTRY, type PromptId } from "./prompts";
+export { configureGrading, type GradingDeps } from "./deps";
+export { GradingError } from "./errors";
