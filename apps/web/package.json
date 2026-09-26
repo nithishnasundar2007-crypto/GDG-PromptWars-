@@ -15,9 +15,11 @@
   },
   "dependencies": {
     "fastest-levenshtein": "^1.0.16",
+    "pyodide": "^0.28.3",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-router-dom": "^7.1.1",
+    "sql.js": "^1.14.2",
     "zod": "^3.24.1"
   },
   "devDependencies": {
@@ -25,6 +27,7 @@
     "@types/node": "^24.13.3",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",
+    "@types/sql.js": "^1.4.11",
     "@vitejs/plugin-react": "^6.1.1",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^9.1.0",
@@ -33,6 +36,7 @@
     "prettier": "^3.4.2",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.19.1",
+    "vite-plugin-static-copy": "^4.1.1",
     "vitest": "^5.0.2"
   }
 }
