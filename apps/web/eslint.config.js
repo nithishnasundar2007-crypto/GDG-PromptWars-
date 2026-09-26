@@ -59,11 +59,16 @@ export default tseslint.config(
     },
   },
   {
-    // Backend 1's own code (Suchit) — strict-type-checked, not just
-    // recommended, per hard rule §3.1. Scoped here rather than repo-wide so
-    // it doesn't force type-aware fixes onto engine/screens/shell, which
-    // this session doesn't own.
-    files: ["src/grading/**/*.ts"],
+    // strict-type-checked, not just recommended, per hard rule §3.1.
+    // Scoped to grading (Suchit's own code) plus contracts/lib/config, which
+    // are small, shared, and came back clean or near-clean. engine/** is
+    // deliberately NOT included here: a first pass surfaced ~170 findings
+    // there, nearly all non-null assertions across its test suite — real,
+    // but a bulk rewrite of another owner's actively-developed module and
+    // its tests is a bigger, riskier change than this pass should make
+    // unilaterally. Left as a follow-up for Uthai, noted in
+    // docs/EVALUATION_AUDIT.md.
+    files: ["src/grading/**/*.ts", "src/contracts/**/*.ts", "src/lib/**/*.ts", "src/config/**/*.ts"],
     extends: [...tseslint.configs.strictTypeChecked],
     languageOptions: {
       parserOptions: {
@@ -78,6 +83,16 @@ export default tseslint.config(
   },
   {
     files: ["src/grading/**/*.test.ts"],
+    rules: {
+      "@typescript-eslint/require-await": "off",
+    },
+  },
+  {
+    // mocks.ts implements CompassApi's async interface with synchronous
+    // fixture data by design (USE_MOCKS mode never touches the network or a
+    // real DB) — every method being `async` with no `await` is the point,
+    // not an oversight.
+    files: ["src/contracts/mocks.ts"],
     rules: {
       "@typescript-eslint/require-await": "off",
     },

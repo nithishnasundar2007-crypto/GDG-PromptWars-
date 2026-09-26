@@ -28,6 +28,14 @@ import type {
   Topic,
 } from "./types";
 
+/** Reads a fixed, known-present index into this file's own fixture arrays —
+ * throwing a clear error instead of a silent non-null assertion if the
+ * fixture data underneath it is ever accidentally shortened. */
+function definite<T>(value: T | undefined, what: string): T {
+  if (value === undefined) throw new Error(`mocks.ts: expected ${what} to be present in the fixture data`);
+  return value;
+}
+
 // ---------------------------------------------------------------------------
 // Seed content: 1 company, 3 rounds, topics = graphs, SQL joins, project
 // explanation, plus one HR topic so the HR readiness block has data.
@@ -199,10 +207,10 @@ function buildGrade(entry: ScriptEntry): GradeResult {
 // ---------------------------------------------------------------------------
 
 function buildReadinessMap(): ReadinessMap {
-  const graphsTopic = topics[0]!;
-  const sqlTopic = topics[1]!;
-  const projectTopic = topics[2]!;
-  const hrTopic = topics[3]!;
+  const graphsTopic = definite(topics[0], "topics[0] (graphs)");
+  const sqlTopic = definite(topics[1], "topics[1] (sql joins)");
+  const projectTopic = definite(topics[2], "topics[2] (project)");
+  const hrTopic = definite(topics[3], "topics[3] (hr)");
 
   return {
     companyId: company.id,
@@ -261,7 +269,7 @@ function buildPlan(studentId: string): Plan {
   const days = Array.from({ length: 6 }, (_, i) => {
     const date = new Date();
     date.setDate(date.getDate() + i);
-    const kind = kinds[i % kinds.length]!;
+    const kind = definite(kinds[i % kinds.length], "a plan-item kind");
     const item: PlanItem = {
       id: `pi_${i + 1}`,
       date: date.toISOString().slice(0, 10),
@@ -272,7 +280,7 @@ function buildPlan(studentId: string): Plan {
     };
     return { date: item.date, items: [item] };
   });
-  return { studentId, driveDate: days[5]!.date, hoursPerDay: 3, days };
+  return { studentId, driveDate: definite(days[5], "the plan's 6th day").date, hoursPerDay: 3, days };
 }
 
 // ---------------------------------------------------------------------------
@@ -319,7 +327,7 @@ export const mockApi: CompassApi = {
     return ok(student);
   },
 
-  async startLadder(studentId, topicId, role, step) {
+  async startLadder(studentId, topicId, _role, step) {
     ladderCounter += 1;
     const ladderId = `ld_${ladderCounter}`;
     const question = topicId === "tp_sql_joins" ? sqlJoinQuestion : bfsQuestion;
@@ -335,7 +343,6 @@ export const mockApi: CompassApi = {
     };
     ladders.set(ladderId, ladder);
     callIndexByLadder.set(ladderId, 0);
-    void role;
     return ok({ ladder, question });
   },
 
@@ -345,7 +352,7 @@ export const mockApi: CompassApi = {
       return { ok: false, error: { code: "NOT_FOUND", message: "Unknown ladder", retryable: false } };
     }
     const idx = callIndexByLadder.get(ladderId) ?? 0;
-    const entry = SCRIPT[Math.min(idx, SCRIPT.length - 1)]!;
+    const entry = definite(SCRIPT[Math.min(idx, SCRIPT.length - 1)], "a scripted submitStep entry");
     callIndexByLadder.set(ladderId, idx + 1);
 
     attemptCounter += 1;
@@ -421,7 +428,7 @@ export const mockApi: CompassApi = {
 
   async getNextTask(studentId) {
     const plan = buildPlan(studentId);
-    return ok(plan.days[0]!.items[0]!);
+    return ok(definite(definite(plan.days[0], "the plan's first day").items[0], "that day's first item"));
   },
 
   async getDrill(gapId) {

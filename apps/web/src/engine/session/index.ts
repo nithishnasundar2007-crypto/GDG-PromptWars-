@@ -30,6 +30,7 @@ import type {
 } from "../../contracts";
 import { isoDate, nowOf, parseIsoDate, type EngineDeps, type GradeStepFn } from "../deps";
 import { EngineError } from "../errors";
+import { logEngineWarning } from "../logger";
 import {
   approachFor,
   findCompany,
@@ -231,7 +232,7 @@ export function createSessionModule(repo: Repository, deps: EngineDeps = {}) {
           await planner.replan(student.id);
         } catch (e) {
           // The plan is derived and rebuilt on the next read, so this must not undo a saved step.
-          console.warn("replan failed after submitStep; it will be rebuilt on the next read", e);
+          logEngineWarning("replan failed after submitStep; it will be rebuilt on the next read", e);
         }
 
         // 7. Result.

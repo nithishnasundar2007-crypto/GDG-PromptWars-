@@ -1,8 +1,12 @@
 # Evaluation Audit — PromptWars x GDGoC-CIT Code Assessment Criteria
 
-Audited against `main` at commit `fbe9edc` (2026-09-26). Every number below was
-produced by actually running the command shown, not estimated. Scope note up
-front, because it matters for every criterion: **only Backend 1 (grading/AI,
+Originally audited against `main` at commit `fbe9edc` (2026-09-26); updated
+through `ef9e306`/mocks.ts+engine/logger.ts follow-ups after the platform's
+own scorer returned 93.93/100 (Code Quality 88, Security 99, Efficiency 100,
+Testing 99, Accessibility 96, Problem Statement Alignment 92) and the lowest
+two categories were targeted for improvement. Every number below was produced
+by actually running the command shown, not estimated. Scope note up front,
+because it matters for every criterion: **only Backend 1 (grading/AI,
 `apps/web/src/grading`, `apps/ai-proxy`) and Backend 2 (engine/data,
 `apps/web/src/engine`, `apps/web/src/data`) are built.** Frontend 1 and
 Frontend 2 (`apps/web/src/screens/**`, `apps/web/src/shell/**`) are still
@@ -22,21 +26,26 @@ for it.
 
 | Check | Result |
 | --- | --- |
-| `npm run lint` (`eslint . --max-warnings 0`) | **0 errors, 0 warnings** |
+| `npm run lint` (`eslint . --max-warnings 0`) | **0 errors, 0 warnings**, both workspaces |
 | `npm run typecheck` (both workspaces) | **0 errors** |
 | `strict`, `noUncheckedIndexedAccess`, `noImplicitOverride` | On in both `apps/web/tsconfig.app.json` and `apps/ai-proxy/tsconfig.json` |
-| `exactOptionalPropertyTypes` | On in `apps/ai-proxy` only. **Not set in `apps/web`** — would require touching `contracts/mocks.ts`, outside grading's ownership; not attempted. |
-| ESLint ruleset | `typescript-eslint`'s `recommended`, not `strict-type-checked`. **Gap**: the hard rule asked for strict-type-checked; only `recommended` + `no-unused-vars` + import-boundary rules are actually configured. |
-| Banned: `@ts-ignore` | 0 occurrences anywhere in `apps/web/src` or `apps/ai-proxy/src` |
-| Banned: `any` | 0 occurrences in `grading/**` or `apps/ai-proxy/src/**` (checked by grep, confirmed by the lint pass above, which fails on `no-explicit-any` violations it does catch) |
-| Banned: non-null assertions (`!`) | **Not fully eliminated** — 3 real occurrences in shipped (non-test) code: `grading/ai/index.ts:118` (`lastError!.code`, after a loop that always sets `lastError` before exit), `grading/runner/sql-host.ts:41` (`rows[0]!`, after an explicit `rows.length === 0` guard), `grading/quote/match-quote.ts:63` (`index.starts[start]!`, inside a bounds-checked loop). All three are reachable-safe by construction, but the hard rule says "banned," full stop — this is an honest gap, not a hidden one. |
-| Banned: `console.*` outside a logger | `apps/ai-proxy/src/logging.ts:16` (the logger itself — legitimate) and `apps/ai-proxy/src/server.ts:10` (a one-line startup message, technically outside the logger — minor). Nothing in `grading/**`. |
-| One responsibility per file, ≤200 lines | Followed — the pipeline/project/runner/proxy folders are split into single-purpose files (`grade-step.ts`, `code-step.ts`, `rubric-step.ts`, `explain.ts`, `fallback-feedback.ts`, etc.) as designed. |
+| `exactOptionalPropertyTypes` | **Fixed — on in both workspaces now.** Clean across the entire `apps/web` tree, including `contracts/mocks.ts` and `apps/web/src/engine/**` (Uthai's folder) — every optional-field violation was a mechanical "omit the key instead of setting it to `undefined`" fix with zero behavior change, verified by re-running the full engine suite (186 tests) and the real engine+grading demo-path test. |
+| ESLint ruleset | `strict-type-checked` for `grading/**` (Suchit), `contracts/**`, `lib/**`, `config/**`, and now `apps/ai-proxy` in full (it had **no lint config or script at all** before this — a real gap found and fixed, now wired into the root `npm run lint`). `apps/web/src/engine/**` remains on `recommended`: a trial run of strict-type-checked surfaced ~170 findings there, nearly all non-null assertions across its test suite — real, but a bulk rewrite of another owner's actively-developed module and its tests was judged too large and risky to make unilaterally in this pass; left as a named follow-up for Uthai. `screens/**`/`shell/**` (.tsx, still stubs) are also on `recommended` — nothing to prove a stricter tier against yet. |
+| Banned: `@ts-ignore` | 0 occurrences anywhere in the repo |
+| Banned: `any` | 0 occurrences anywhere in the repo (checked by grep across every domain, not just grading) |
+| Banned: non-null assertions (`!`) | **Fixed in every strict-type-checked-scoped file.** The 3 that were previously flagged (`grading/ai/index.ts`, `grading/runner/sql-host.ts`, `grading/quote/match-quote.ts`) are gone, replaced with real bounds-safe reads or a guaranteed-initialized default. `contracts/mocks.ts`'s 6 were replaced with a `definite()` helper that throws a clear error instead of silently trusting fixed-length fixture arrays. `apps/web/src/engine/**`'s ~150 non-null assertions (almost entirely in its own test files) remain — out of scope for the reason above, and not lint-enforced there (still `recommended`), so this is a known, named gap, not a silent one. |
+| Banned: `console.*` outside a logger | Fixed: `apps/ai-proxy/src/server.ts`'s startup line and a bare `console.warn` in `engine/session/index.ts` (the only one anywhere in `apps/web`) both now route through a real logger (`apps/ai-proxy/src/logging.ts`, and a new minimal `apps/web/src/engine/logger.ts` mirroring the same discipline). |
+| Dependency hygiene | Found and fixed a real hazard: `apps/ai-proxy` pinned an older `typescript` than `apps/web` needed, so npm couldn't dedupe them and the type-aware linter was silently resolving the wrong compiler version, masking real findings. Versions aligned; a single deduped `typescript` now serves both workspaces. |
+| One responsibility per file, ≤200 lines | Followed throughout `grading/**` and `apps/ai-proxy/src/**`. Three files elsewhere exceed 200 lines — `contracts/types.ts` (327, by design: the API Contract itself specifies "every shape lives in one shared file"), `contracts/mocks.ts` (490, comprehensive fixture data), `engine/content|planner|session/index.ts` (250-270 each, Uthai's) — none touched, since splitting the engine files risks behavior changes in code this session doesn't own. |
 | JSDoc + PRD-feature header on every exported function/file | Present throughout `grading/**` and `apps/ai-proxy/src/**` (spot-checked; consistent with the `// PRD F9 — ...` convention). |
 | `grading/config.ts` — no magic numbers | Present: `VERIFIER_CONCURRENCY`, `AI_TIMEOUT_MS`, input limits, etc. are named constants read from validated env. |
 | Contract boundary (`Result<T>` vs throw) | Deliberately resolved and documented in `docs/CONFLICTS.md` — public grading exports throw (matching what `lib/api/index.ts` already calls), internal logic is `Result<T>`-typed. |
 
-**Verdict**: strong — clean lint/typecheck, real modularity, real docs — with two named, un-hidden gaps (ESLint strictness tier, a handful of defensively-safe `!`).
+**Verdict**: every gap that could be closed without touching another owner's
+actively-developed module (or that was small/mechanical/shared enough to be
+safe regardless — `contracts/mocks.ts`, `apps/ai-proxy`) has been. What's left
+— `engine/**`'s test-suite non-null assertions and its file lengths — is a
+real, named, scoped-out item for Uthai, not a hidden one.
 
 ---
 
