@@ -1,17 +1,19 @@
 // Basic in-memory token bucket, per client IP. Enough for the MVP's single
 // local student; not meant to survive a restart or scale across instances.
+import { config } from "./config.js";
+
 const buckets = new Map<string, { tokens: number; lastRefill: number }>();
 
-const CAPACITY = 30; // requests
 const REFILL_MS = 60_000; // per minute
 
 export function allow(clientId: string): boolean {
+  const capacity = config.rateLimitPerMin;
   const now = Date.now();
-  const bucket = buckets.get(clientId) ?? { tokens: CAPACITY, lastRefill: now };
+  const bucket = buckets.get(clientId) ?? { tokens: capacity, lastRefill: now };
 
   const elapsed = now - bucket.lastRefill;
   if (elapsed > REFILL_MS) {
-    bucket.tokens = CAPACITY;
+    bucket.tokens = capacity;
     bucket.lastRefill = now;
   }
 

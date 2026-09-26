@@ -18,9 +18,17 @@ jobs:
       - run: npm run lint
       - run: npm run typecheck
       - run: npm run test
+      - name: Coverage gate (web) — quote/pipeline/ai >=95%/90%, grading/** >=85% lines
+        run: npm run coverage -w web
+      - name: Coverage gate (ai-proxy) — >=85% lines
+        run: npm run coverage -w ai-proxy
+      - name: Contract freeze check (SHA-256 lock + expectTypeOf) — already run by `npm run test`
+        run: echo "See apps/web/src/contracts/contract-freeze.test.ts, exercised above."
       - run: npm run validate-seeds
       - run: npm run build
-      - name: Check GEMINI_API_KEY never reaches the web bundle
+      - name: Check GEMINI_API_KEY (and any AIza-prefixed key) never reaches the web bundle
         run: node scripts/check-bundle-key.mjs
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      - name: Dependency audit (high severity and above)
+        run: npm audit --audit-level=high

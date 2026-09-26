@@ -12,7 +12,7 @@
     "build": "npm run build -w web && npm run build -w ai-proxy",
     "lint": "npm run lint -w web",
     "typecheck": "npm run typecheck -w web && npm run typecheck -w ai-proxy",
-    "test": "npm run test -w web",
+    "test": "npm run test -w web && npm run test -w ai-proxy",
     "validate-seeds": "node scripts/validate-seeds.mjs",
     "check-bundle-key": "node scripts/check-bundle-key.mjs"
   },

@@ -10,10 +10,10 @@ import { join } from "node:path";
 const DIST_DIR = join(process.cwd(), "apps/web/dist");
 const key = process.env.GEMINI_API_KEY;
 
-if (!key) {
-  console.log("GEMINI_API_KEY not set in this environment — nothing to check against, skipping.");
-  process.exit(0);
-}
+// Hard rule §3.2: this check must fire even when CI's own environment has no
+// GEMINI_API_KEY set — a real Gemini key always starts with "AIza", so that
+// literal substring is checked regardless of the env-value check above.
+const AIZA_PREFIX = "AIza";
 
 if (!existsSync(DIST_DIR)) {
   console.error(`✗ ${DIST_DIR} does not exist — run "npm run build" first.`);
@@ -38,9 +38,13 @@ for (const file of walk(DIST_DIR)) {
   } catch {
     continue; // binary asset (image, font, etc.) — not a place a string key would appear as text
   }
-  if (content.includes(key)) {
+  if (key && content.includes(key)) {
     found = true;
     console.error(`✗ Found GEMINI_API_KEY value in bundled file: ${file}`);
+  }
+  if (content.includes(AIZA_PREFIX)) {
+    found = true;
+    console.error(`✗ Found a string starting with "${AIZA_PREFIX}" (looks like a real Gemini API key) in bundled file: ${file}`);
   }
 }
 
@@ -49,4 +53,7 @@ if (found) {
   process.exit(1);
 }
 
-console.log("✓ GEMINI_API_KEY not found in apps/web/dist.");
+if (!key) {
+  console.log("GEMINI_API_KEY not set in this environment — checked for the \"AIza\" prefix only.");
+}
+console.log("✓ No Gemini API key value (env-set or AIza-prefixed) found in apps/web/dist.");

@@ -1,17 +1,46 @@
-// The Gemini key lives ONLY here — nowhere in apps/web. See
-// docs/PHASE0_AUDIT.md sections I (conflict 1) and J.
-function required(name: string): string {
-  const value = process.env[name];
-  if (!value) throw new Error(`Missing required env var: ${name}`);
-  return value;
+// PRD §7 — ai-proxy config. The Gemini key lives ONLY here — nowhere in
+// apps/web. See docs/PHASE0_AUDIT.md sections I (conflict 1) and J. Every
+// value is validated with zod (hard rule §3.2: "every external boundary...
+// validated with zod") rather than trusted as an unchecked string.
+
+import { z } from "zod";
+
+const envSchema = z.object({
+  GEMINI_API_KEY: z.string().min(1, "GEMINI_API_KEY is required"),
+  GEMINI_MODEL: z.string().default("gemini-2.0-flash"),
+  ALLOWED_ORIGIN: z.string().default("http://localhost:5173"),
+  PORT: z
+    .string()
+    .optional()
+    .transform((v) => (v ? Number(v) : 8787)),
+  RATE_LIMIT_PER_MIN: z
+    .string()
+    .optional()
+    .transform((v) => (v ? Number(v) : 60)),
+  // App Check enforcement is genuinely unverifiable in this sandbox (no live
+  // Firebase project/credentials — see docs/SECURITY.md). NODE_ENV=production
+  // without an explicit dev-bypass opt-in is the only way to require it.
+  APP_CHECK_DEV_BYPASS: z
+    .string()
+    .optional()
+    .transform((v) => v !== "false"), // default true (dev bypass ON) unless explicitly disabled
+  FIREBASE_PROJECT_ID: z.string().optional(),
+});
+
+const parsed = envSchema.safeParse(process.env);
+if (!parsed.success) {
+  throw new Error(`Invalid ai-proxy environment configuration: ${parsed.error.message}`);
 }
 
 export const config = {
-  geminiApiKey: required("GEMINI_API_KEY"),
-  geminiModel: process.env.GEMINI_MODEL ?? "gemini-2.0-flash",
-  allowedOrigin: process.env.ALLOWED_ORIGIN ?? "http://localhost:5173",
-  port: Number(process.env.PORT ?? 8787),
-};
+  geminiApiKey: parsed.data.GEMINI_API_KEY,
+  geminiModel: parsed.data.GEMINI_MODEL,
+  allowedOrigin: parsed.data.ALLOWED_ORIGIN,
+  port: parsed.data.PORT,
+  rateLimitPerMin: parsed.data.RATE_LIMIT_PER_MIN,
+  appCheckDevBypass: parsed.data.APP_CHECK_DEV_BYPASS,
+  firebaseProjectId: parsed.data.FIREBASE_PROJECT_ID,
+} as const;
 
 // Keep in sync with apps/web/src/contracts/types.ts CONTRACT_VERSION.
 // Duplicated (not imported) because ai-proxy is a separate deployable

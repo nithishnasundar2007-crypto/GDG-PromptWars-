@@ -12,6 +12,7 @@ import { config } from "../../config";
 import type { ApiError, Result } from "../../contracts";
 import { err, ok } from "../../contracts/errors";
 import type { PromptId } from "../prompts";
+import { AI_RETRY_BASE_DELAY_MS, AI_RETRY_JITTER_MS, AI_TIMEOUT_MS } from "../config";
 
 interface AiCallLog {
   promptId: PromptId;
@@ -26,22 +27,55 @@ export function getAiCallLogs(): readonly AiCallLog[] {
   return logs;
 }
 
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/** Jittered backoff delay for the single retry (hard rule §3.3). */
+function retryDelayMs(): number {
+  return AI_RETRY_BASE_DELAY_MS + Math.random() * AI_RETRY_JITTER_MS;
+}
+
+// Maps each client-side PromptId to its fixed /v1/* route (API Contract
+// §7.5 / hard rule §3.2 — "fixed /v1/* operations only, never an open
+// relay"). The request body IS the prompt's input, not a wrapper envelope —
+// the proxy's own zod schemas (apps/ai-proxy/src/schemas.ts) validate it.
+const PROMPT_ROUTES: Record<PromptId, string> = {
+  grader: "/v1/grade",
+  verifier: "/v1/verify",
+  explainer: "/v1/explain",
+  "project-question-generator": "/v1/project-questions",
+};
+
 async function callAiProxy(promptId: PromptId, input: unknown): Promise<unknown> {
-  const response = await fetch(`${config.aiProxyUrl}/api/generate`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ promptId, input }),
-  });
-  if (!response.ok) {
-    throw new Error(`ai-proxy responded ${response.status}`);
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), AI_TIMEOUT_MS);
+  try {
+    const response = await fetch(`${config.aiProxyUrl}${PROMPT_ROUTES[promptId]}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(input),
+      signal: controller.signal,
+    });
+    if (!response.ok) {
+      throw new Error(`ai-proxy responded ${response.status}`);
+    }
+    return await response.json();
+  } finally {
+    clearTimeout(timeout);
   }
-  return response.json();
 }
 
 /**
  * Calls the given prompt through the proxy, validates the JSON result against
- * `schema`, and retries once on any failure (network or schema mismatch)
- * before giving up with a typed ApiError. Never throws to the caller.
+ * `schema`, and retries once (after a jittered backoff) on any failure
+ * (network, timeout, or schema mismatch) before giving up with a typed
+ * ApiError. Never throws to the caller — a grade is either produced or
+ * refused, never guessed at (docs/PHASE0_AUDIT.md section J).
+ *
+ * @param promptId which versioned prompt to call (see grading/prompts/registry.ts)
+ * @param input the (unvalidated-here) request payload; the proxy validates it
+ * @param schema zod schema the proxy's JSON response must satisfy
  */
 export async function generate<T>(
   promptId: PromptId,
@@ -53,7 +87,10 @@ export async function generate<T>(
   let lastError: ApiError | undefined;
 
   for (let attempt = 0; attempt < 2; attempt++) {
-    if (attempt > 0) retries += 1;
+    if (attempt > 0) {
+      retries += 1;
+      await sleep(retryDelayMs());
+    }
     try {
       const raw = await callAiProxy(promptId, input);
       const parsed = schema.safeParse(raw);
@@ -63,9 +100,10 @@ export async function generate<T>(
       }
       lastError = { code: "GEMINI_BAD_JSON", message: parsed.error.message, retryable: true };
     } catch (e) {
+      const isTimeout = e instanceof Error && e.name === "AbortError";
       lastError = {
         code: "GEMINI_FAILED",
-        message: e instanceof Error ? e.message : "Gemini call failed",
+        message: isTimeout ? `Gemini call timed out after ${AI_TIMEOUT_MS}ms` : e instanceof Error ? e.message : "Gemini call failed",
         retryable: true,
       };
     }
