@@ -12,5 +12,15 @@ export default defineConfig({
       RATE_LIMIT_PER_MIN: "60",
       APP_CHECK_DEV_BYPASS: "true",
     },
+    coverage: {
+      provider: "v8",
+      include: ["src/**"],
+      exclude: [
+        "src/**/*.test.ts",
+        "src/server.ts", // process entrypoint only (binds a port) — nothing to unit test
+        "src/prompts/**", // prompt wording/schemas, exercised end-to-end via router.test.ts
+      ],
+      thresholds: { lines: 85 },
+    },
   },
 });
